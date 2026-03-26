@@ -6,6 +6,7 @@ import ProductDetail from "@/components/ProductDetail.vue";
 import RegisterPage from "@/views/RegisterPage.vue";
 import AdminProductPage from "@/views/admin/AdminProductPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
+import CartPage from "@/views/CartPage.vue";
 
 const routes = [
     {
@@ -31,6 +32,10 @@ const routes = [
     {
         path: '/search',
         component: SearchPage
+    },
+    {
+        path: "/cart",
+        component: CartPage
     }
 ]
 

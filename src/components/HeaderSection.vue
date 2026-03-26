@@ -20,11 +20,9 @@
                 <router-link to="/login" aria-label="Login" class="hidden sm:block hover:opacity-70 transition-opacity">
                     <i class="fa-regular fa-user"></i>
                 </router-link>
-                <button aria-label="Cart" class="relative hover:opacity-70 transition-opacity">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <span
-                        class="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">3</span>
-                </button>
+<router-link to="/cart" aria-label="Cart" class="relative hover:opacity-70 transition-opacity block cursor-pointer">
+    <i class="fa-solid fa-cart-shopping"></i>
+</router-link>
             </div>
         </div>
     </header>
