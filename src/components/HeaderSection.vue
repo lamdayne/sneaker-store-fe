@@ -14,9 +14,9 @@
                 <a class="hover:text-accent transition-colors text-accent" href="#">Sale</a>
             </nav>
             <div class="flex items-center space-x-5">
-                <button aria-label="Search" class="hover:opacity-70 transition-opacity">
+                <router-link to="/search" aria-label="Search" class="hover:opacity-70 transition-opacity">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+                </router-link>
                 <router-link to="/login" aria-label="Login" class="hidden sm:block hover:opacity-70 transition-opacity">
                     <i class="fa-regular fa-user"></i>
                 </router-link>
