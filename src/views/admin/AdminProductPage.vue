@@ -220,6 +220,20 @@ const resetVariantForm = () => {
     addVariants()
 }
 
+const resetForm = () => {
+    productInfo.value = {
+        name: '',
+        description: '',
+        basePrice: 0,
+        material: '',
+        featured: false,
+        brandId: '',
+        categoryId: ''
+    }
+    mainImageIndex.value = false;
+    previewImages.value = []
+}
+
 const removeVariant = (index) => {
     variants.value.splice(index, 1);
 }
@@ -228,9 +242,11 @@ const saveProduct = async () => {
     const product = { ...productInfo.value }
     const response = await productStore.create(product)
     if (response.status === 201) {
-        const result = await saveProductVariant(response.data.id);
-        await saveProductImage(result.data.id);
+        const productId = response.data.id
+        const result = await saveProductVariant(productId);
+        await saveProductImage(productId, result.data.id);
         resetVariantForm()
+        resetForm()
         Swal.fire({
             title: "Thành công",
             icon: "success",
