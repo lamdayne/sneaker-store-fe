@@ -13,13 +13,21 @@
         </div>
         <nav class="flex-1 px-3 space-y-1">
             <!-- Dashboard Active -->
-            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/10 text-white" href="#">
+            <a :class="{
+                'flex items-center gap-3 px-3 py-2.5': true,
+                'rounded-lg bg-white/10 text-white': isActive('home'),
+                'text-slate-400 hover:text-white transition-colors': !isActive('home')
+            }" href="#">
                 <i class="fa-solid fa-gauge-high"></i>
                 <span class="text-[13px] font-medium">Dashboard</span>
             </a>
             <!-- Sản phẩm with nested -->
             <div class="pt-2">
-                <div class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white transition-colors">
+                <div :class="{
+                    'flex items-center gap-3 px-3 py-2.5': true,
+                    'rounded-lg bg-white/10 text-white': isActive('/product'),
+                    'text-slate-400 hover:text-white transition-colors': isActive('/product')
+                }">
                     <i class="fa-solid fa-box-archive"></i>
                     <span class="text-[13px] font-medium">Sản phẩm</span>
                 </div>
@@ -59,3 +67,11 @@
         </div>
     </aside>
 </template>
+
+<script setup>
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+const isActive = (path) => route.path.includes(path)
+</script>
