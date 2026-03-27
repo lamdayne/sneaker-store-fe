@@ -1,0 +1,168 @@
+<template>
+    <div class="min-h-screen bg-[#f9f9f9] flex flex-col items-center justify-center font-sans py-10">
+
+        <div v-if="currentStep === 1" class="w-full max-w-[440px]">
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <svg class="w-8 h-8 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.5 5h19l-9.5 13L2.5 5z" />
+                    <rect x="1.5" y="3" width="21" height="1.5" fill="currentColor" />
+                </svg>
+                <span class="text-xl font-bold tracking-[0.2em] text-black uppercase mt-1">Solehaus</span>
+            </div>
+
+            <div class="bg-[#f5f5f2] px-8 py-10 rounded-2xl mx-4 shadow-sm">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-serif font-bold text-gray-900 mb-2">Quên mật khẩu?</h1>
+                    <p class="text-gray-500 text-sm">Nhập email để nhận link đặt lại mật khẩu</p>
+                </div>
+
+                <form @submit.prevent="goToStep2">
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 tracking-wider mb-2">EMAIL</label>
+                        <input v-model="email" type="email" placeholder="name@example.com" required
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black outline-none" />
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-[#111111] hover:bg-black text-white py-3 rounded-lg font-medium transition-colors">
+                        Gửi link đặt lại
+                    </button>
+                </form>
+            </div>
+            <div class="text-center mt-6">
+                <button class="text-sm text-gray-600 hover:text-black">← Quay lại đăng nhập</button>
+            </div>
+        </div>
+
+        <div v-else-if="currentStep === 2"
+            class="w-full max-w-2xl bg-[#f5f5f2] rounded-2xl shadow-sm mx-4 overflow-hidden relative">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200/50 bg-white">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.5 5h19l-9.5 13L2.5 5z" />
+                    </svg>
+                    <span class="font-bold tracking-widest text-sm uppercase mt-1">Solehaus</span>
+                </div>
+                <button @click="currentStep = 1" class="text-gray-400 hover:text-black text-xl">✕</button>
+            </div>
+
+            <div class="px-8 py-16 flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-serif font-bold text-gray-900 mb-3">Kiểm tra email của bạn</h2>
+                <p class="text-gray-600 mb-8">Chúng tôi đã gửi link đến <span class="font-medium text-black">{{ email
+                        }}</span></p>
+
+                <button @click="currentStep = 1" class="text-sm text-gray-500 hover:text-black underline mb-8">Dùng
+                    email khác</button>
+
+                <button @click="currentStep = 3"
+                    class="px-4 py-2 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition font-bold">
+                    👉 (Bấm vào đây để test) Chuyển sang Bước 3
+                </button>
+            </div>
+        </div>
+
+        <div v-else-if="currentStep === 3" class="w-full max-w-[440px]">
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <svg class="w-8 h-8 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.5 5h19l-9.5 13L2.5 5z" />
+                </svg>
+                <span class="text-xl font-bold tracking-[0.2em] text-black uppercase mt-1">Solehaus</span>
+            </div>
+
+            <div class="bg-[#f5f5f2] px-8 py-10 rounded-2xl mx-4 shadow-sm relative">
+                <div v-if="!isSuccess">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-gray-900 mb-2">Đặt mật khẩu mới</h2>
+                        <p class="text-gray-500 text-sm">Vui lòng nhập mật khẩu mới và xác nhận lại.</p>
+                    </div>
+                    <form @submit.prevent="handleResetPassword">
+                        <div class="mb-5 relative">
+                            <label class="block text-xs font-bold text-slate-500 tracking-wider mb-2">MẬT KHẨU
+                                MỚI</label>
+                            <input v-model="password" type="password" placeholder="••••••••" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none pr-10 focus:ring-2 focus:ring-black" />
+                        </div>
+
+                        <div class="mb-8 relative">
+                            <label class="block text-xs font-bold text-slate-500 tracking-wider mb-2">XÁC NHẬN MẬT
+                                KHẨU</label>
+                            <input v-model="confirmPassword" type="password" placeholder="••••••••" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 outline-none pr-10 focus:ring-2 focus:ring-black" />
+                            <span v-if="password === confirmPassword && password.length > 0"
+                                class="absolute right-4 top-[38px] text-green-500 font-bold text-lg">✓</span>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-[#111111] hover:bg-black text-white py-3 rounded-lg font-medium transition-colors">
+                            Đặt lại mật khẩu
+                        </button>
+                    </form>
+                </div>
+
+                <div v-else class="text-center py-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-green-600 mb-2 font-serif text-xl">Thành công!</h3>
+                    <p class="text-gray-500 text-sm mb-6">Mật khẩu của bạn đã được cập nhật.</p>
+                    <button @click="resetFlow"
+                        class="w-full bg-[#111111] hover:bg-black text-white py-3 rounded-lg font-medium transition-colors">
+                        Về trang Đăng nhập
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+// Khởi tạo các biến chứa dữ liệu
+const currentStep = ref(1) // Quản lý luồng 3 bước
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const isSuccess = ref(false) // Quản lý trạng thái thành công ở Bước 3
+
+// Hàm chạy khi submit Form Bước 1
+const goToStep2 = () => {
+    if (email.value) {
+        currentStep.value = 2 // Đổi state sang 2 -> Vue tự động render Bước 2
+    }
+}
+
+// Hàm chạy khi submit Form Bước 3
+const handleResetPassword = () => {
+    if (password.value !== confirmPassword.value) {
+        alert("Mật khẩu xác nhận không khớp!")
+        return
+    }
+    isSuccess.value = true // Đổi state sang thành công
+}
+
+// Hàm làm mới toàn bộ quy trình
+const resetFlow = () => {
+    currentStep.value = 1
+    isSuccess.value = false
+    email.value = ''
+    password.value = ''
+    confirmPassword.value = ''
+}
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+.font-serif {
+    font-family: 'Playfair Display', serif;
+}
+</style>

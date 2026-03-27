@@ -8,6 +8,7 @@ import AdminProductPage from "@/views/admin/AdminProductPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
 import CartPage from "@/views/CartPage.vue";
 
+import ForgotPassword from "@/components/ForgotPassword.vue";
 const routes = [
     {
         path: "/",
@@ -36,6 +37,11 @@ const routes = [
     {
         path: "/cart",
         component: CartPage
+
+    },
+    {
+        path: '/forgotpassword',
+        component: ForgotPassword
     }
 ]
 

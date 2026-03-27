@@ -28,7 +28,9 @@
                         class="block mt-2  w-full px-4 py-3 text-slate-900 bg-transparent shadow-xs rounded-md shadow-gray-300 outline-0"
                         id="password" placeholder="Nhập mật khẩu của bạn" type="password" />
                 </div>
-                <a class="text-xs font-bold text-right" href="#">Quên mật khẩu?</a>
+                <router-link to="/forgotpassword"
+                    class="text-xs font-bold text-right hover:text-black hover:underline cursor-pointer">Quên mật
+                    khẩu?</router-link>
                 <button
                     class="flex-1 py-3 cursor-pointer shadow-md shadow-gray-400 bg-gray-900 text-white text-xl rounded-md">Đăng
                     nhập</button>
