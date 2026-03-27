@@ -6,6 +6,7 @@ import ProductDetail from "@/components/ProductDetail.vue";
 import RegisterPage from "@/views/RegisterPage.vue";
 import AdminProductPage from "@/views/admin/AdminProductPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
+import CartPage from "@/views/CartPage.vue";
 
 import ForgotPassword from "@/components/ForgotPassword.vue";
 const routes = [
@@ -33,7 +34,11 @@ const routes = [
         path: '/search',
         component: SearchPage
     },
+    {
+        path: "/cart",
+        component: CartPage
 
+    },
     {
         path: '/forgotpassword',
         component: ForgotPassword
@@ -52,6 +57,5 @@ const router = createRouter({
     //     }
     // }
 })
-
 
 export default router;
