@@ -8,6 +8,8 @@ import AdminProductPage from "@/views/admin/AdminProductPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
 import MyInfoPage from "@/views/MyInfoPage.vue";
 
+import ForgotPassword from "@/components/ForgotPassword.vue";
+import AddressPage from "@/views/AddressPage.vue";
 const routes = [
     {
         path: "/",
@@ -34,8 +36,16 @@ const routes = [
         component: SearchPage
     },
     {
+        path: '/forgotpassword',
+        component: ForgotPassword
+    },
+    {
         path: '/auth/me',
         component: MyInfoPage
+    },
+    {
+        path: '/auth/address',
+        component: AddressPage
     }
 ]
 
@@ -51,5 +61,6 @@ const router = createRouter({
     //     }
     // }
 })
+
 
 export default router;
