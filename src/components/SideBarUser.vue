@@ -8,22 +8,22 @@
             </div>
         </div>
         <nav class="flex flex-col mt-4 gap-2">
-            <a href="" class="flex items-center p-3 bg-gray-950 text-white gap-4 rounded-xl">
+            <router-link to="/auth/me" class="flex items-center p-3 bg-gray-950 text-white gap-4 rounded-xl">
                 <i class="fa-regular fa-user"></i>
                 <span>Thông tin tài khoản</span>
-            </a>
-            <a href="" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
+            </router-link>
+            <router-link to="/auth/address" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
                 <i class="fa-solid fa-location-dot"></i>
                 <span>Địa chỉ</span>
-            </a>
-            <a href="" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
+            </router-link>
+            <router-link to="/auth/order" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
                 <i class="fa-solid fa-box-open"></i>
                 <span>Đơn hàng của tôi</span>
-            </a>
-            <a href="" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
+            </router-link>
+            <router-link to="/auth/change-password" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
                 <i class="fa-solid fa-lock"></i>
                 <span>Đổi mật khẩu</span>
-            </a>
+            </router-link>
             <div class="border border-gray-200"></div>
             <a href="" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>

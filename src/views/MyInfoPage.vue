@@ -1,6 +1,5 @@
 <template>
-    <div class="container mx-auto flex gap-4">
-        <SideBarUser></SideBarUser>
+    <AccountManageSection>
         <div class="mt-4 mx-auto">
             <h1 class="text-2xl font-serif font-bold">Thông tin cá nhân</h1>
             <div class="w-dvh mt-4 border rounded-lg p-4">
@@ -39,11 +38,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </AccountManageSection>
 </template>
 
 <script setup>
-import SideBarUser from '@/components/SideBarUser.vue';
+import AccountManageSection from '@/components/AccountManageSection.vue';
 
 
 </script>
