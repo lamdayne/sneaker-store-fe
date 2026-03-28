@@ -16,5 +16,15 @@ export const useCategoryStore = defineStore('category', () => {
         }
     }
 
+    async function getCategoryById(id) {
+        try {
+            const response = await axiosInstance.get(`/categories/${id}`);
+            return response;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
+
     return { categories, fetchCategories }
 })

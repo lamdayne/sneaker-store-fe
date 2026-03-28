@@ -8,6 +8,17 @@ export const useBrandStore = defineStore('brand', () => {
     async function fetchBrands() {
         try {
             const response = await axiosInstance.get('/brands');
+            brands.value = response.data;
+            return response;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
+
+    async function getBrandById(id) {
+        try {
+            const response = await axiosInstance.get(`/brands/${id}`)
             return response;
         } catch (error) {
             console.error(error);

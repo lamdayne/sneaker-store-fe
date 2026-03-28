@@ -6,9 +6,12 @@ import ProductDetail from "@/components/ProductDetail.vue";
 import RegisterPage from "@/views/RegisterPage.vue";
 import AdminProductPage from "@/views/admin/AdminProductPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
+import MyInfoPage from "@/views/MyInfoPage.vue";
 import CartPage from "@/views/CartPage.vue";
 
 import ForgotPassword from "@/components/ForgotPassword.vue";
+import AddressPage from "@/views/AddressPage.vue";
+import OrderManagePage from "@/views/OrderManagePage.vue";
 const routes = [
     {
         path: "/",
@@ -42,6 +45,18 @@ const routes = [
     {
         path: '/forgotpassword',
         component: ForgotPassword
+    },
+    {
+        path: '/auth/me',
+        component: MyInfoPage
+    },
+    {
+        path: '/auth/address',
+        component: AddressPage
+    },
+    {
+        path: '/auth/order',
+        component: OrderManagePage
     }
 ]
 
