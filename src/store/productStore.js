@@ -4,6 +4,7 @@ import axiosInstance from "@/axios/axios";
 
 export const useProductStore = defineStore('product', () => {
     const products = ref([]);
+    const productDetail = ref(null);
 
     const fetchProducts = async () => {
         console.log('Fetch products')
@@ -11,6 +12,24 @@ export const useProductStore = defineStore('product', () => {
             const response = await axiosInstance.get('/products');
             products.value = response.data;
         } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
+    const findProductById = async (id) => {
+        console.log('Get product by id')
+        try {
+            const response = await axiosInstance.get(`/products/${id}`)
+            // const product = response.data;
+
+            // if (product.productImages) {
+            //     product.productImages = [...product.productImages].sort(
+            //         (a, b) => a.displayOrder - b.displayOrder
+            //     );
+            // }
+            productDetail.value = response.data;
+        } catch (error) {
+            console.error(error)
             return Promise.reject(error)
         }
     }
@@ -58,5 +77,19 @@ export const useProductStore = defineStore('product', () => {
         }
     }
 
-    return { fetchProducts, products, create, createProductVariant, getCloudinarySignature, createProductImage }
+    const resetProductDetail = () => {
+        productDetail.value = null;
+    };
+
+    return {
+        fetchProducts,
+        products,
+        create,
+        createProductVariant,
+        getCloudinarySignature,
+        createProductImage,
+        findProductById,
+        productDetail,
+        resetProductDetail
+    }
 })

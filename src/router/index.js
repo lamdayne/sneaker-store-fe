@@ -12,6 +12,7 @@ import CartPage from "@/views/CartPage.vue";
 import ForgotPassword from "@/components/ForgotPassword.vue";
 import AddressPage from "@/views/AddressPage.vue";
 import OrderManagePage from "@/views/OrderManagePage.vue";
+import ProductDetailPage from "@/views/ProductDetailPage.vue";
 const routes = [
     {
         path: "/",
@@ -23,7 +24,7 @@ const routes = [
     },
     {
         path: "/product/:id",
-        component: ProductDetail
+        component: ProductDetailPage
     },
     {
         path: "/register",
