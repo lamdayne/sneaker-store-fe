@@ -13,7 +13,6 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const isAdminPage = computed(() => {
-  console.log(route.path)
   return route.path.includes('admin');
 })
 </script>
