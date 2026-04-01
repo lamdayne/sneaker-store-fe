@@ -26,5 +26,35 @@ export const useBrandStore = defineStore('brand', () => {
         }
     }
 
-    return { brands, fetchBrands }
+    async function create(brand) {
+        try {
+            const response = await axiosInstance.post('/brands', brand)
+            return response
+        } catch (error) {
+            console.error(error)
+            return Promise.reject(error)
+        }
+    }
+
+    async function update(id, brand) {
+        try {
+            const response = await axiosInstance.put(`/brands/${id}`, brand)
+            return response
+        } catch (error) {
+            console.error(error)
+            return Promise.reject(error)
+        }
+    }
+
+    async function changeStatus(id, active) {
+        try {
+            const response = await axiosInstance.patch(`/brands/${id}?active=${active}`)
+            return response
+        } catch (error) {
+            console.error(error)
+            return Promise.reject(error)
+        }
+    }
+
+    return { brands, fetchBrands, create, changeStatus, update }
 })

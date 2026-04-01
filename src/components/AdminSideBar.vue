@@ -13,41 +13,56 @@
         </div>
         <nav class="flex-1 px-3 space-y-1">
             <!-- Dashboard Active -->
-            <a :class="{
-                'flex items-center gap-3 px-3 py-2.5': true,
-                'rounded-lg bg-white/10 text-white': isActive('home'),
-                'text-slate-400 hover:text-white transition-colors': !isActive('home')
-            }" href="#">
+            <router-link :class="{
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                'bg-white/10 text-white': isActive('/admin/dashboard')
+            }" to="/admin/dashboard">
                 <i class="fa-solid fa-gauge-high"></i>
                 <span class="text-[13px] font-medium">Dashboard</span>
-            </a>
+            </router-link>
             <!-- Sản phẩm with nested -->
-            <div class="pt-2">
+            <div>
                 <div :class="{
-                    'flex items-center gap-3 px-3 py-2.5': true,
-                    'rounded-lg bg-white/10 text-white': isActive('/product'),
-                    'text-slate-400 hover:text-white transition-colors': isActive('/product')
-                }">
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                    'bg-white/10 text-white': isActive('/admin/product')
+                }" @click="toggleProductMenu">
                     <i class="fa-solid fa-box-archive"></i>
                     <span class="text-[13px] font-medium">Sản phẩm</span>
                 </div>
-                <div class="ml-9 mt-1 space-y-1">
+                <div v-if="isProductMenuOpen" class="ml-9 mt-1 space-y-1">
                     <a class="block py-1.5 text-[12px] text-slate-500 hover:text-white" href="#">Danh sách</a>
-                    <a class="block py-1.5 text-[12px] text-slate-500 hover:text-white" href="#">Thêm mới</a>
-                    <a class="block py-1.5 text-[12px] text-slate-500 hover:text-white" href="#">Danh mục</a>
-                    <a class="block py-1.5 text-[12px] text-slate-500 hover:text-white" href="#">Thương hiệu</a>
+                    <router-link to="/admin/product"
+                        class="block py-1.5 text-[12px] text-slate-500 hover:text-white">Thêm mới</router-link>
                 </div>
             </div>
-            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-                href="#">
+            <router-link :class="{
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                'bg-white/10 text-white': isActive('/admin/brand')
+            }" to="/admin/brand">
+                <i class="fa-solid fa-tag"></i>
+                <span class="text-[13px] font-medium">Thương hiệu</span>
+            </router-link>
+            <router-link :class="{
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                'bg-white/10 text-white': isActive('/admin/category')
+            }" to="/admin/category">
+                <i class="fa-solid fa-layer-group"></i>
+                <span class="text-[13px] font-medium">Phân loại</span>
+            </router-link>
+            <router-link :class="{
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                'bg-white/10 text-white': isActive('/admin/order')
+            }" to="/admin/order">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="text-[13px] font-medium">Đơn hàng</span>
-            </a>
-            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-                href="#">
+            </router-link>
+            <router-link :class="{
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/5 transition-all': true,
+                'bg-white/10 text-white': isActive('/admin/user')
+            }" to="/admin/user">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="text-[13px] font-medium">Khách hàng</span>
-            </a>
+            </router-link>
         </nav>
         <div class="mt-auto p-4 border-t border-white/5">
             <div class="flex items-center gap-3">
@@ -69,9 +84,15 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const isProductMenuOpen = ref(false);
+
+const toggleProductMenu = () => {
+    isProductMenuOpen.value = !isProductMenuOpen.value;
+}
 
 const isActive = (path) => route.path.includes(path)
 </script>

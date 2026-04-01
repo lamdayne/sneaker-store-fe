@@ -1,6 +1,5 @@
 <template>
-    <AdminSideBar />
-    <div class="ml-68 mr-4">
+    <AdminManageSection>
         <div class="flex items-center justify-between mt-3">
             <h1 class="font-serif font-bold uppercase text-2xl">Thêm sản phẩm</h1>
             <button class="px-4 py-2.5 rounded-xl bg-gray-900 text-white" @click="saveProduct">Lưu sản
@@ -138,11 +137,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </AdminManageSection>
 </template>
 
 <script setup>
-import AdminSideBar from '@/components/AdminSideBar.vue';
+import AdminManageSection from '@/components/AdminManageSection.vue';
 import { useBrandStore } from '@/store/brandStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useProductStore } from '@/store/productStore';
