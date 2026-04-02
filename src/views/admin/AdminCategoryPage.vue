@@ -66,8 +66,12 @@
             <template #footer>
                 <button v-if="categoryId" @click="updateCategory"
                     class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Update</button>
-                <button v-else @click="saveCategory"
-                    class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Save</button>
+                <div v-else class="flex gap-4">
+                    <button @click="resetForm"
+                        class="px-6 py-2.5 rounded-xl cursor-pointer shadow shadow-gray-400 text-black">Reset</button>
+                    <button @click="saveCategory"
+                        class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Save</button>
+                </div>
             </template>
         </ModelSection>
         <!-- Loading -->
@@ -131,7 +135,12 @@ const resetForm = () => {
         displayOrder: 1,
         active: true
     }
+    categoryId.value = null
     removeImage()
+}
+
+const changeActiveStatus = async (id, e) => {
+    await categoryStore.changeStatus(id, e.target.checked)
 }
 
 const editCategory = (category) => {

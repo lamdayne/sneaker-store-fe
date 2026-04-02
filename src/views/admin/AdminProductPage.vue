@@ -137,11 +137,18 @@
                 </div>
             </div>
         </div>
+        <!-- Loading -->
+        <ModelSection :is-open="isLoading">
+            <div class="animate-spin">
+                <i class="fa-solid fa-hourglass"></i>
+            </div>
+        </ModelSection>
     </AdminManageSection>
 </template>
 
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
+import ModelSection from '@/components/ModelSection.vue';
 import { useBrandStore } from '@/store/brandStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useProductStore } from '@/store/productStore';
@@ -154,6 +161,7 @@ const brands = ref([]);
 const categories = ref([]);
 const productStore = useProductStore();
 const mainImageIndex = ref(null);
+const isLoading = ref(false);
 
 const productInfo = ref({
     name: '',
@@ -238,6 +246,7 @@ const removeVariant = (index) => {
 }
 
 const saveProduct = async () => {
+    isLoading.value = true
     const product = { ...productInfo.value }
     const response = await productStore.create(product)
     if (response.status === 201) {
@@ -246,6 +255,7 @@ const saveProduct = async () => {
         await saveProductImage(productId, result.data.id);
         resetVariantForm()
         resetForm()
+        isLoading.value = false
         Swal.fire({
             title: "Thành công",
             icon: "success",
@@ -259,6 +269,7 @@ const saveProduct = async () => {
             draggable: true,
             text: response.message
         });
+        isLoading.value = false
     }
 }
 

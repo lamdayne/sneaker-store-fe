@@ -78,8 +78,12 @@
             <template #footer>
                 <button v-if="brandIdEdit" @click="updateInfo"
                     class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Update</button>
-                <button v-else @click="saveBrand"
-                    class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Save</button>
+                <div v-else class="flex gap-4">
+                    <button @click="resetForm"
+                        class="px-6 py-2.5 rounded-xl cursor-pointer shadow shadow-gray-400 text-black">Reset</button>
+                    <button @click="saveBrand"
+                        class="px-6 py-2.5 rounded-xl cursor-pointer bg-gray-950 text-white">Save</button>
+                </div>
             </template>
         </ModelSection>
         <!-- Loading -->
@@ -134,6 +138,7 @@ const fillForm = (brand) => {
 
 const closeBrandModal = (e) => {
     isOpen.value = e
+    resetForm()
 }
 
 const removeImage = () => {

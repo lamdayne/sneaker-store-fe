@@ -46,5 +46,15 @@ export const useCategoryStore = defineStore('category', () => {
         }
     }
 
-    return { categories, fetchCategories, create, update }
+    async function changeStatus(id, status) {
+        try {
+            const response = await axiosInstance.patch(`/categories/${id}?status=${status}`);
+            return response;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
+
+    return { categories, fetchCategories, create, update, changeStatus }
 })
