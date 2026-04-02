@@ -1,6 +1,5 @@
 <template>
-    <AdminSideBar />
-    <div class="ml-68 mr-4">
+    <AdminManageSection>
         <div class="flex items-center justify-between mt-3">
             <h1 class="font-serif font-bold uppercase text-2xl">Thêm sản phẩm</h1>
             <button class="px-4 py-2.5 rounded-xl bg-gray-900 text-white" @click="saveProduct">Lưu sản
@@ -138,11 +137,18 @@
                 </div>
             </div>
         </div>
-    </div>
+        <!-- Loading -->
+        <ModelSection :is-open="isLoading">
+            <div class="animate-spin">
+                <i class="fa-solid fa-hourglass"></i>
+            </div>
+        </ModelSection>
+    </AdminManageSection>
 </template>
 
 <script setup>
-import AdminSideBar from '@/components/AdminSideBar.vue';
+import AdminManageSection from '@/components/AdminManageSection.vue';
+import ModelSection from '@/components/ModelSection.vue';
 import { useBrandStore } from '@/store/brandStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useProductStore } from '@/store/productStore';
@@ -155,6 +161,7 @@ const brands = ref([]);
 const categories = ref([]);
 const productStore = useProductStore();
 const mainImageIndex = ref(null);
+const isLoading = ref(false);
 
 const productInfo = ref({
     name: '',
@@ -239,6 +246,7 @@ const removeVariant = (index) => {
 }
 
 const saveProduct = async () => {
+    isLoading.value = true
     const product = { ...productInfo.value }
     const response = await productStore.create(product)
     if (response.status === 201) {
@@ -247,6 +255,7 @@ const saveProduct = async () => {
         await saveProductImage(productId, result.data.id);
         resetVariantForm()
         resetForm()
+        isLoading.value = false
         Swal.fire({
             title: "Thành công",
             icon: "success",
@@ -260,6 +269,7 @@ const saveProduct = async () => {
             draggable: true,
             text: response.message
         });
+        isLoading.value = false
     }
 }
 

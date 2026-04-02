@@ -2,7 +2,7 @@
     <AccountManageSection>
         <div class="mt-4 mx-auto">
             <h1 class="text-2xl font-serif font-bold">Thông tin cá nhân</h1>
-            <div class="w-dvh mt-4 border rounded-lg p-4">
+            <div class="w-250 mt-4 border rounded-lg p-4">
                 <div class="flex p-4">
                     <div class="flex gap-6">
                         <img src="https://files.catbox.moe/lonccy.jpg" class="w-20 rounded-full shadow-xs" alt="">
