@@ -18,6 +18,7 @@ import AdminBrandPage from "@/views/admin/AdminBrandPage.vue";
 import AdminCategoryPage from "@/views/admin/AdminCategoryPage.vue";
 import AdminOrderPage from "@/views/admin/AdminOrderPage.vue";
 import AdminUserPage from "@/views/admin/AdminUserPage.vue";
+
 const routes = [
     {
         path: "/",
