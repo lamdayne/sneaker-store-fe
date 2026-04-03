@@ -5,10 +5,10 @@ import { ref } from "vue";
 export const useCategoryStore = defineStore('category', () => {
     const categories = ref([]);
 
-    async function fetchCategories() {
+    async function fetchCategories(pageNo = 1, pageSize = 5, sortBy = 'name:asc') {
         try {
-            const response = await axiosInstance.get('/categories');
-            categories.value = [...response.data]
+            const response = await axiosInstance.get(`/categories?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`);
+            categories.value = [...response.data.items]
             return response;
         } catch (error) {
             console.error(error);

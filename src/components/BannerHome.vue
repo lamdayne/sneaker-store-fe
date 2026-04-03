@@ -44,7 +44,7 @@ defineEmits(['explore']);
 const slides = [
     'https://static.nike.com/a/images/w_2880,h_1600,c_fill,f_auto/4ed830f2-5f31-4cd9-b1c9-efe735b6d1fc/image.jpg',
     'https://intphcm.com/data/upload/poster-giay-den.jpg',
-    'https://bizweb.dktcdn.net/100/413/756/collections/jordan-2.jpg?v=1617462460240'
+    'https://static.nike.com/a/images/w_2880,h_1600,c_fill,f_auto/c82d77fa-f8ee-47c6-ad45-e017cb4c4070/image.png'
 ];
 
 const currentIndex = ref(0);

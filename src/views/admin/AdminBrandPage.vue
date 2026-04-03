@@ -113,7 +113,9 @@ const brandIdEdit = ref(null);
 const brands = computed(() => brandStore.brands);
 
 onMounted(async () => {
+    isLoading.value = true
     await brandStore.fetchBrands();
+    isLoading.value = false
 })
 
 const brandInfo = ref({
@@ -158,7 +160,6 @@ const resetForm = () => {
 
 const updateInfo = async () => {
     let secureUrl;
-    closeBrandModal(false)
     isLoading.value = true
     let body;
 
@@ -171,6 +172,7 @@ const updateInfo = async () => {
 
     try {
         const response = await brandStore.update(brandIdEdit.value, body)
+        closeBrandModal(false)
         if (response.status === 202) {
             isLoading.value = false
             resetForm()

@@ -104,7 +104,9 @@ const categoryId = ref(null);
 const categories = computed(() => categoryStore.categories)
 
 onMounted(async () => {
+    isLoading.value = true
     await categoryStore.fetchCategories();
+    isLoading.value = false
 })
 
 const categoryInfo = ref({

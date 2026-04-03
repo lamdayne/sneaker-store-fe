@@ -6,11 +6,11 @@ export const useProductStore = defineStore('product', () => {
     const products = ref([]);
     const productDetail = ref(null);
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (pageNo = 1, pageSize = 10, sortBy = 'id:asc') => {
         console.log('Fetch products')
         try {
-            const response = await axiosInstance.get('/products');
-            products.value = response.data;
+            const response = await axiosInstance.get(`/products?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`);
+            products.value = response.data.items;
         } catch (error) {
             return Promise.reject(error)
         }
