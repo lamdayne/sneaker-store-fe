@@ -5,7 +5,7 @@ import axiosInstance from "@/axios/axios";
 export const useBrandStore = defineStore('brand', () => {
     const brands = ref([]);
 
-    async function fetchBrands(pageNo = 1, pageSize = 9, sortBy = 'name:asc') {
+    async function fetchBrands(pageNo = 1, pageSize = 8, sortBy = 'name:asc') {
         try {
             const response = await axiosInstance.get(`/brands?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`);
             brands.value = response.data.items;

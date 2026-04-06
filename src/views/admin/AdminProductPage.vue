@@ -174,12 +174,12 @@ const productInfo = ref({
 })
 
 const loadBrands = async () => {
-    const result = await brandStore.fetchBrands();
+    const result = await brandStore.fetchBrands(1, 10);
     brands.value = result.data.items;
 }
 
 const loadCategories = async () => {
-    const result = await categoryStore.fetchCategories();
+    const result = await categoryStore.fetchCategories(1, 10);
     categories.value = result.data.items;
 }
 

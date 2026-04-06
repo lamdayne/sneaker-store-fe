@@ -2,7 +2,7 @@ import axios from "axios"
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 10000,
+    timeout: 50000,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -10,6 +10,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
         return config;
     },
     (error) => {

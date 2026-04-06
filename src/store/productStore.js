@@ -6,11 +6,12 @@ export const useProductStore = defineStore('product', () => {
     const products = ref([]);
     const productDetail = ref(null);
 
-    const fetchProducts = async (pageNo = 1, pageSize = 10, sortBy = 'id:asc') => {
+    const fetchProducts = async (pageNo = 1, pageSize = 8, sortBy = 'id:asc') => {
         console.log('Fetch products')
         try {
             const response = await axiosInstance.get(`/products?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`);
             products.value = response.data.items;
+            return response
         } catch (error) {
             return Promise.reject(error)
         }
@@ -28,6 +29,7 @@ export const useProductStore = defineStore('product', () => {
             //     );
             // }
             productDetail.value = response.data;
+            return response
         } catch (error) {
             console.error(error)
             return Promise.reject(error)
@@ -81,6 +83,27 @@ export const useProductStore = defineStore('product', () => {
         productDetail.value = null;
     };
 
+    const search = async ({ pageNo, pageSize, sortBy, name, categoryId, brandId, size, price }) => {
+        try {
+            const response = await axiosInstance.get(`/products/search?page=${pageNo}&size=${pageSize}&sort=${sortBy}&product=name~${name},basePrice>0, basePrice<${price}`);
+            products.value = response.data.items;
+            return response
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
+    const update = async (id, product) => {
+        console.log('Update product')
+        try {
+            const response = await axiosInstance.put(`/products/${id}`, product);
+            return response
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
+
     return {
         fetchProducts,
         products,
@@ -90,6 +113,8 @@ export const useProductStore = defineStore('product', () => {
         createProductImage,
         findProductById,
         productDetail,
-        resetProductDetail
+        resetProductDetail,
+        search,
+        update
     }
 })

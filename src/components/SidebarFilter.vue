@@ -9,75 +9,48 @@
             <div class="flex flex-col gap-6">
                 <!-- Danh mục -->
                 <div class="border-b border-primary/5 pb-4">
-                    <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
+                    <button @click="toggleCategoryMenu"
+                        class="flex w-full items-center justify-between py-2 text-sm font-medium cursor-pointer">
                         Danh mục
                         <i class="fa-solid fa-angle-down"></i>
                     </button>
-                    <div class="mt-2 space-y-3">
-                        <label class="flex items-center gap-3 text-sm">
-                            <input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                type="checkbox" />
-                            Chạy bộ
-                        </label>
-                        <label class="flex items-center gap-3 text-sm">
-                            <input checked="true"
+                    <div v-if="isCategoryOpen" class="mt-2 space-y-3">
+                        <label v-for="category in categories" :key="category.id"
+                            class="flex items-center gap-3 text-sm">
+                            <input v-model="categorySelected"
                                 class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                type="checkbox" />
-                            Lifestyle
-                        </label>
-                        <label class="flex items-center gap-3 text-sm">
-                            <input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                type="checkbox" />
-                            Bóng rổ
-                        </label>
-                        <label class="flex items-center gap-3 text-sm">
-                            <input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                type="checkbox" />
-                            Tennis
+                                type="checkbox" :value="category.id" />
+                            {{ category.name }}
                         </label>
                     </div>
                 </div>
                 <!-- Thương hiệu -->
                 <div class="border-b border-primary/5 pb-4">
-                    <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
+                    <button @click="toggleBrandMenu"
+                        class="flex w-full items-center justify-between py-2 text-sm font-medium cursor-pointer">
                         Thương hiệu
                         <i class="fa-solid fa-angle-down"></i>
                     </button>
-                    <div class="mt-2 space-y-3">
-                        <label class="flex items-center justify-between text-sm">
-                            <div class="flex items-center gap-3">
-                                <input checked="true"
-                                    class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                    type="checkbox" />
-                                Nike
-                            </div>
-                            <span class="text-[10px] text-slate-400">42</span>
-                        </label>
-                        <label class="flex items-center justify-between text-sm">
+                    <div v-if="isBrandOpen" class="mt-2 space-y-3">
+                        <label v-for="brand in brands" :key="brand.id"
+                            class="flex items-center justify-between text-sm">
                             <div class="flex items-center gap-3">
                                 <input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                    type="checkbox" />
-                                Adidas
+                                    type="checkbox" :value="brand.id" />
+                                {{ brand.name }}
                             </div>
-                            <span class="text-[10px] text-slate-400">38</span>
-                        </label>
-                        <label class="flex items-center justify-between text-sm">
-                            <div class="flex items-center gap-3">
-                                <input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                                    type="checkbox" />
-                                Jordan
-                            </div>
-                            <span class="text-[10px] text-slate-400">24</span>
+                            <!-- <span class="text-[10px] text-slate-400">42</span> -->
                         </label>
                     </div>
                 </div>
                 <!-- Size -->
                 <div class="border-b border-primary/5 pb-4">
-                    <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
+                    <button @click="toggleSizeMenu"
+                        class="flex w-full items-center justify-between py-2 text-sm font-medium cursor-pointer">
                         Size
                         <i class="fa-solid fa-angle-down"></i>
                     </button>
-                    <div class="mt-4 grid grid-cols-5 gap-2">
+                    <div v-if="isSizeOpen" class="mt-4 grid grid-cols-5 gap-2">
                         <button
                             class="flex h-9 w-9 items-center justify-center rounded border border-slate-200 text-xs hover:border-primary">36</button>
                         <button
@@ -99,7 +72,7 @@
                     </div>
                 </div>
                 <!-- Màu -->
-                <div class="border-b border-primary/5 pb-4">
+                <!-- <div class="border-b border-primary/5 pb-4">
                     <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
                         Màu sắc
                         <i class="fa-solid fa-angle-down"></i>
@@ -112,7 +85,7 @@
                         <button class="h-6 w-6 rounded-full bg-green-600"></button>
                         <button class="h-6 w-6 rounded-full bg-slate-400"></button>
                     </div>
-                </div>
+                </div> -->
                 <!-- Khoảng giá -->
                 <div class="border-b border-primary/5 pb-4">
                     <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
@@ -120,35 +93,61 @@
                         <i class="fa-solid fa-angle-down"></i>
                     </button>
                     <div class="mt-4">
-                        <div class="relative h-1 w-full rounded-full bg-slate-200">
-                            <div class="absolute h-full w-2/3 bg-primary rounded-full left-1/4"></div>
-                            <div
-                                class="absolute left-1/4 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-white shadow-sm cursor-pointer">
-                            </div>
-                            <div
-                                class="absolute left-3/4 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-white shadow-sm cursor-pointer">
-                            </div>
-                        </div>
-                        <div class="mt-4 flex justify-between text-xs font-medium">
-                            <span>200,000đ</span>
-                            <span>5,000,000đ</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Giới tính -->
-                <div class="border-b border-primary/5 pb-4">
-                    <button class="flex w-full items-center justify-between py-2 text-sm font-medium">
-                        Giới tính
-                        <i class="fa-solid fa-angle-down"></i>
-                    </button>
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        <button
-                            class="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-white">Nam</button>
-                        <button
-                            class="rounded-full bg-slate-200 dark:bg-slate-800 px-4 py-1.5 text-xs font-medium hover:bg-primary/10 transition-colors">Nữ</button>
+                        <input v-model="price" @input="changePrice" id="priceSlider" type="range" min="0" max="10000000"
+                            step="100000"
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        <span class="text-lg">0 - {{ format.formatVND(price) }}</span>
                     </div>
                 </div>
             </div>
         </div>
     </aside>
 </template>
+
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue';
+import { format } from '@/utils/format';
+import { useCategoryStore } from '@/store/categoryStore';
+import { useBrandStore } from '@/store/brandStore';
+
+const price = ref(0)
+const isCategoryOpen = ref(false)
+const isBrandOpen = ref(false)
+const isSizeOpen = ref(false)
+
+const categorySelected = ref([])
+
+const emit = defineEmits(['update:price'])
+
+const categoryStore = useCategoryStore()
+const brandStore = useBrandStore()
+
+const categories = computed(() => categoryStore.categories)
+const brands = computed(() => brandStore.brands)
+
+onMounted(async () => {
+    await categoryStore.fetchCategories(1, 10)
+    await brandStore.fetchBrands(1, 10)
+})
+
+const changePrice = (e) => {
+    const val = Number(e.target.value);
+    emit('update:price', val);
+}
+
+const toggleCategoryMenu = () => {
+    isCategoryOpen.value = !isCategoryOpen.value
+}
+
+const toggleBrandMenu = () => {
+    isBrandOpen.value = !isBrandOpen.value
+}
+
+const toggleSizeMenu = () => {
+    isSizeOpen.value = !isSizeOpen.value
+}
+
+watch(categorySelected, () => {
+    console.log(categorySelected.value)
+})
+</script>
