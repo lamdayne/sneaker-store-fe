@@ -2,14 +2,14 @@
     <AdminManageSection>
         <div class="min-h-screen bg-slate-50 p-8 font-sans text-slate-900">
             <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
+            <!-- <div class="flex justify-between items-center mb-8">
                 <h1 class="text-2xl font-bold text-slate-800">Khách hàng</h1>
                 <button @click="exportCSV"
                     class="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
                     <Download :size="18" />
                     Xuất CSV
                 </button>
-            </div>
+            </div> -->
 
             <!-- Filters Section -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-6">
@@ -87,48 +87,46 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
-                        <tr v-for="customer in customers" :key="customer.id"
-                            class="hover:bg-slate-50/50 transition-colors">
+                        <tr v-for="user in users" :key="user.id" class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
                                     <div
-                                        :class="['w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0', customer.avatarBg, customer.avatarBg.includes('slate-900') ? 'text-white' : '']">
-                                        {{ customer.avatar }}
+                                        :class="['w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0']">
+                                        <img :src="user.avatarUrl" class="rounded-full" alt="">
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-800 text-sm">{{ customer.name }}</div>
-                                        <div
-                                            :class="['text-[10px] font-bold px-2 py-0.5 rounded-md inline-block mt-1', customer.typeClass]">
-                                            {{ customer.type }}
-                                        </div>
+                                        <div class="font-bold text-slate-800 text-sm">{{ user.fullName }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-slate-600">{{ customer.email }}</div>
-                                <div class="text-xs text-slate-400 mt-0.5">{{ customer.phone }}</div>
+                                <div class="text-sm text-slate-600">{{ user.email }}</div>
+                                <div class="text-xs text-slate-400 mt-0.5">{{ user.phone }}</div>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span
                                     class="inline-flex items-center justify-center bg-slate-50 text-slate-700 font-medium px-3 py-1 rounded-md text-sm min-w-[32px]">
-                                    {{ customer.orders }}
+                                    12
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right font-bold text-slate-800 text-sm">
-                                {{ customer.totalSpent }}
+                                1234567
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-500">
-                                {{ customer.joinedDate }}
+                                {{ user.createdAt }}
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex justify-center">
-                                    <button :disabled="isLoading" @click="customer.status = !customer.status"
-                                        :class="['relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none', customer.status ? 'bg-green-500' : 'bg-slate-200']">
-                                        <span :class="[
-                                            'inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform',
-                                            customer.status ? 'translate-x-5' : 'translate-x-1'
-                                        ]" />
-                                    </button>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="notifications" :checked="user.isActive"
+                                            class="sr-only peer">
+                                        <div
+                                            class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
+                                        </div>
+                                        <div
+                                            class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full peer-checked:translate-x-5 transition-transform">
+                                        </div>
+                                    </label>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-right">
@@ -137,7 +135,7 @@
                             </td>
                         </tr>
                         <!-- Empty State -->
-                        <tr v-if="customers.length === 0 && !isLoading">
+                        <tr v-if="users.length === 0 && !isLoading">
                             <td colspan="7" class="px-6 py-12 text-center text-slate-400 text-sm">
                                 Không tìm thấy khách hàng nào phù hợp.
                             </td>
@@ -148,7 +146,7 @@
                 <!-- Footer / Pagination -->
                 <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between bg-white">
                     <p class="text-sm text-slate-400">
-                        Hiển thị 1 - {{ customers.length }} trong {{ totalCustomers }} khách hàng
+                        Hiển thị 1 - {{ users.length }} trong {{ totalUsers }} khách hàng
                     </p>
                     <div class="flex items-center gap-2">
                         <button @click="currentPage > 1 && (currentPage--, fetchCustomers())"
@@ -173,87 +171,33 @@
 
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
-import { ref, onMounted, watch } from 'vue';
-import { Download, Search, Calendar, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ref, onMounted, watch, computed } from 'vue';
+import { Search, Calendar, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { useUserStore } from '@/store/userStore';
 
-// 1. Cấu hình trạng thái dữ liệu
-const customers = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
 
-// 2. Các tham số lọc và phân trang (Gửi lên Back-end)
+const userStore = useUserStore();
+const users = computed(() => userStore.users)
 const searchQuery = ref('');
 const hasOrdersFilter = ref(true);
 const dateRange = ref('01/01/2023 - 31/10/2023');
 const currentPage = ref(1);
-const totalCustomers = ref(0);
+const totalUsers = ref(0);
 
-// 3. Hàm gọi API
-const fetchCustomers = async () => {
-  isLoading.value = true;
-  error.value = null;
-  
-  try {
-    // Thay URL này bằng endpoint thật của bạn
-    // Ví dụ: const response = await fetch(`/api/customers?page=${currentPage.value}&search=${searchQuery.value}`);
-    
-    // Giả lập gọi API (Delay 1s)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Dữ liệu mẫu giả định trả về từ Back-end
-    const mockDataFromBackend = [
-      {
-        id: 1,
-        name: 'Nguyễn Lâm',
-        type: 'VIP MEMBER',
-        typeClass: 'text-red-600 bg-red-50',
-        avatar: 'NL',
-        avatarBg: 'bg-slate-900',
-        email: 'lam.nguyen@example.com',
-        phone: '090 123 4567',
-        orders: 12,
-        totalSpent: '14.500.000đ',
-        joinedDate: '12/05/2023',
-        status: true
-      },
-      {
-        id: 2,
-        name: 'Trần Hoa',
-        type: 'CUSTOMER',
-        typeClass: 'text-slate-500 bg-slate-50',
-        avatar: 'TH',
-        avatarBg: 'bg-slate-200 text-slate-600',
-        email: 'hoa.tran@example.com',
-        phone: '091 789 0123',
-        orders: 3,
-        totalSpent: '4.200.000đ',
-        joinedDate: '28/08/2023',
-        status: true
-      }
-    ];
-
-    customers.value = mockDataFromBackend;
-    totalCustomers.value = 450; // Giả sử tổng database có 450
-  } catch (err) {
-    error.value = "Không thể tải dữ liệu khách hàng. Vui lòng thử lại.";
-    console.error("API Error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
 
 // 4. Theo dõi thay đổi của filter để fetch lại dữ liệu
-watch([searchQuery, hasOrdersFilter], () => {
-  currentPage.value = 1; // Reset về trang 1 khi search
-  fetchCustomers();
+watch([searchQuery, hasOrdersFilter], async () => {
+    currentPage.value = 1; // Reset về trang 1 khi search
+    await userStore.fetchUsers();
 });
 
 // Gọi lần đầu khi component mount
-onMounted(() => {
-  fetchCustomers();
+onMounted(async () => {
+    isLoading.value = true
+    const resp = await userStore.fetchUsers()
+    isLoading.value = false
+    totalUsers.value = resp.data.totalElements
 });
-
-const exportCSV = () => {
-  console.log('Đang xuất tệp CSV từ server...');
-};
 </script>

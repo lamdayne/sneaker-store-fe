@@ -5,7 +5,7 @@
             <button class="px-4 py-2.5 cursor-pointer rounded-xl bg-gray-900 text-white" @click="openCategoryModel">Thêm
                 loại sản phẩm</button>
         </div>
-        <div class="overflow-x-auto mt-4">
+        <div class="overflow-x-auto mt-4 lg:h-145.5">
             <table class="table-fixed w-full border border-gray-300 border-collapse">
                 <thead>
                     <tr class="bg-gray-100">
@@ -44,6 +44,9 @@
                 </tbody>
             </table>
         </div>
+        <PaginationSection :page-no="pagination.pageNo" :page-size="pagination.pageSize"
+            :total-elements="pagination.totalElements" :total-page="pagination.totalPage"
+            v-model:page-no="pagination.pageNo" @change-page="changePage"></PaginationSection>
         <ModelSection v-if="!isLoading" :title="'Thêm loại sản phẩm'" :is-open="isOpen"
             @close-modal="closeCategoryModel">
             <div class="flex flex-col items-center justify-between gap-4 w-100">
@@ -87,6 +90,7 @@
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
 import ModelSection from '@/components/ModelSection.vue';
+import PaginationSection from '@/components/PaginationSection.vue';
 import { useCategoryStore } from '@/store/categoryStore';
 import { uploadToCloudinary } from '@/utils/fileUtil';
 import Swal from 'sweetalert2';
@@ -100,11 +104,26 @@ const isLoading = ref(false);
 
 const categoryStore = useCategoryStore();
 const categoryId = ref(null);
+const pagination = ref({
+    pageNo: 0,
+    pageSize: 0,
+    totalPage: 0,
+    totalElements: 0
+})
 
 const categories = computed(() => categoryStore.categories)
 
 onMounted(async () => {
-    await categoryStore.fetchCategories();
+    isLoading.value = true
+    const resp = await categoryStore.fetchCategories();
+    const value = { ...resp.data }
+    pagination.value = {
+        pageNo: value.pageNo,
+        pageSize: value.pageSize,
+        totalElements: value.totalElements,
+        totalPage: value.totalPage
+    }
+    isLoading.value = false
 })
 
 const categoryInfo = ref({
@@ -189,15 +208,11 @@ const updateCategory = async () => {
 }
 
 const handleImage = (event) => {
-    const files = event.target.files;
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (!file.type.startsWith('image/')) continue;
-        const url = URL.createObjectURL(file);
-        imageUrl.value = url
-        logoFile.value = file
-    }
+    const file = event.target.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    imageUrl.value = url
+    logoFile.value = file
 }
 
 const saveCategory = async () => {
@@ -206,9 +221,9 @@ const saveCategory = async () => {
     categoryInfo.value.imageUrl = categoryImage.secure_url;
     try {
         const response = await categoryStore.create({ ...categoryInfo.value })
+        closeCategoryModel(false)
         if (response.status === 201) {
             isLoading.value = false
-            closeCategoryModel(false)
             resetForm()
             Swal.fire({
                 title: "Thành công",
@@ -216,7 +231,7 @@ const saveCategory = async () => {
                 draggable: true,
                 text: response.message
             });
-            categories.value.push(response.data)
+            // categories.value.push(response.data)
         } else {
             Swal.fire({
                 title: "Thất bại",
@@ -233,5 +248,11 @@ const saveCategory = async () => {
 
 const uploadCategoryImage = async (file) => {
     return uploadToCloudinary(file)
+}
+
+const changePage = async (page) => {
+    isLoading.value = true
+    await categoryStore.fetchCategories(page)
+    isLoading.value = false
 }
 </script>

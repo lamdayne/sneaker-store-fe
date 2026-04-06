@@ -30,7 +30,8 @@
                     <span class="text-[13px] font-medium">Sản phẩm</span>
                 </div>
                 <div v-if="isProductMenuOpen" class="ml-9 mt-1 space-y-1">
-                    <a class="block py-1.5 text-[12px] text-slate-500 hover:text-white" href="#">Danh sách</a>
+                    <router-link to="/admin/product/list"
+                        class="block py-1.5 text-[12px] text-slate-500 hover:text-white">Danh sách</router-link>
                     <router-link to="/admin/product"
                         class="block py-1.5 text-[12px] text-slate-500 hover:text-white">Thêm mới</router-link>
                 </div>

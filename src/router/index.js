@@ -18,6 +18,8 @@ import AdminBrandPage from "@/views/admin/AdminBrandPage.vue";
 import AdminCategoryPage from "@/views/admin/AdminCategoryPage.vue";
 import AdminOrderPage from "@/views/admin/AdminOrderPage.vue";
 import AdminUserPage from "@/views/admin/AdminUserPage.vue";
+import AdminProductListPage from "@/views/admin/AdminProductListPage.vue";
+import { useUserStore } from "@/store/userStore";
 
 const routes = [
     {
@@ -46,7 +48,10 @@ const routes = [
     },
     {
         path: "/cart",
-        component: CartPage
+        component: CartPage,
+        meta: {
+            requiresAuth: true
+        }
 
     },
     {
@@ -55,15 +60,24 @@ const routes = [
     },
     {
         path: '/auth/me',
-        component: MyInfoPage
+        component: MyInfoPage,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/auth/address',
-        component: AddressPage
+        component: AddressPage,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/auth/order',
-        component: OrderManagePage
+        component: OrderManagePage,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/admin/dashboard',
@@ -84,6 +98,10 @@ const routes = [
     {
         path: '/admin/user',
         component: AdminUserPage
+    },
+    {
+        path: '/admin/product/list',
+        component: AdminProductListPage
     }
 ]
 
@@ -98,6 +116,21 @@ const router = createRouter({
     //         return { top: 0, behavior: 'smooth' };
     //     }
     // }
+})
+
+router.beforeEach((to, from, next) => {
+    const userStore = useUserStore()
+
+    if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+        next({
+            path: '/login',
+            query: {
+                redirect: to.fullPath
+            }
+        })
+    } else {
+        next()
+    }
 })
 
 export default router;

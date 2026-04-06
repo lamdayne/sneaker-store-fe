@@ -3,8 +3,8 @@
         <div class="flex mt-3 items-center gap-4">
             <img src="https://files.catbox.moe/lonccy.jpg" class="w-14 rounded-full" alt="">
             <div class="flex flex-col">
-                <p class="text-[18px] font-medium">Nguyen Van a</p>
-                <span class="text-[14px]">email@gmail.com</span>
+                <p class="text-[14px] font-medium">{{ user.fullName }}</p>
+                <span class="text-[14px]">{{ user.email }}</span>
             </div>
         </div>
         <nav class="flex flex-col mt-4 gap-2">
@@ -29,20 +29,38 @@
                 <span>Đổi mật khẩu</span>
             </router-link> -->
             <div class="border border-gray-200"></div>
-            <a href="" class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl">
+            <button class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl cursor-pointer" @click="logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 <span>Đăng xuất</span>
-            </a>
+            </button>
         </nav>
     </aside>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useUserStore } from '@/store/userStore';
+import { computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore()
+
+const user = computed(() => userStore.user)
+
+onMounted(async () => {
+    await userStore.myInfo()
+})
 
 const isActive = (path) => {
     return route.fullPath === path
+}
+
+const logout = async () => {
+    const body = {
+        token: localStorage.getItem('accessToken')
+    }
+    await userStore.logout(JSON.stringify(body))
+    router.push('/')
 }
 </script>

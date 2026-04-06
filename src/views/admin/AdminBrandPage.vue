@@ -6,7 +6,7 @@
                 @click="openBrandModal(false, null)">Thêm
                 thương hiệu</button>
         </div>
-        <div class="overflow-x-auto mt-4">
+        <div class="overflow-x-auto mt-4 h-140">
             <table class="table-fixed w-full border border-gray-300 border-collapse">
                 <thead>
                     <tr class="bg-gray-100">
@@ -47,6 +47,9 @@
                 </tbody>
             </table>
         </div>
+        <PaginationSection :page-no="pagination.pageNo" :page-size="pagination.pageSize"
+            :total-elements="pagination.totalElements" :total-page="pagination.totalPage"
+            v-model:page-no="pagination.pageNo" @change-page="changePage"></PaginationSection>
         <ModelSection @close-modal="closeBrandModal" :is-open="isOpen" :title="'Thêm thương hiệu'">
             <div class="flex flex-col items-center justify-between gap-4 w-100">
                 <div v-if="brandIdEdit" class="w-full">
@@ -98,6 +101,7 @@
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
 import ModelSection from '@/components/ModelSection.vue';
+import PaginationSection from '@/components/PaginationSection.vue';
 import { useBrandStore } from '@/store/brandStore';
 import { uploadToCloudinary } from '@/utils/fileUtil';
 import Swal from 'sweetalert2';
@@ -111,9 +115,24 @@ const brandStore = useBrandStore()
 const brandIdEdit = ref(null);
 
 const brands = computed(() => brandStore.brands);
+const pagination = ref({
+    pageNo: 0,
+    pageSize: 0,
+    totalPage: 0,
+    totalElements: 0
+})
 
 onMounted(async () => {
-    await brandStore.fetchBrands();
+    isLoading.value = true
+    const resp = await brandStore.fetchBrands();
+    const value = resp.data;
+    pagination.value = {
+        pageNo: value.pageNo,
+        pageSize: value.pageSize,
+        totalPage: value.totalPage,
+        totalElements: value.totalElements
+    }
+    isLoading.value = false
 })
 
 const brandInfo = ref({
@@ -121,7 +140,7 @@ const brandInfo = ref({
     description: ''
 })
 
-const logoUrl = ref(null)
+const imageFile = ref(null)
 
 const openBrandModal = (isEdit, brand) => {
     if (isEdit) {
@@ -152,18 +171,17 @@ const resetForm = () => {
         name: '',
         description: ''
     }
-    logoUrl.value = null;
+    imageFile.value = null;
     brandIdEdit.value = null;
 }
 
 const updateInfo = async () => {
     let secureUrl;
-    closeBrandModal(false)
     isLoading.value = true
     let body;
 
-    if (logoUrl.value) {
-        secureUrl = await uploadLogoBrand(logoUrl.value);
+    if (imageFile.value) {
+        secureUrl = await uploadLogoBrand(imageFile.value);
         body = { ...brandInfo.value, logoUrl: secureUrl.secure_url, active: true }
     } else {
         body = { ...brandInfo.value, logoUrl: urlImage.value, active: true }
@@ -171,6 +189,7 @@ const updateInfo = async () => {
 
     try {
         const response = await brandStore.update(brandIdEdit.value, body)
+        closeBrandModal(false)
         if (response.status === 202) {
             isLoading.value = false
             resetForm()
@@ -195,15 +214,11 @@ const updateInfo = async () => {
 }
 
 const handleImage = (event) => {
-    const files = event.target.files;
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (!file.type.startsWith('image/')) continue;
-        const url = URL.createObjectURL(file);
-        urlImage.value = url
-        logoUrl.value = file
-    }
+    const file = event.target.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    urlImage.value = url
+    imageFile.value = file
 }
 
 const changeActiveStatus = async (id, e) => {
@@ -211,14 +226,14 @@ const changeActiveStatus = async (id, e) => {
 }
 
 const saveBrand = async () => {
-    closeBrandModal(false)
     isLoading.value = true
-    const secureUrl = await uploadLogoBrand(logoUrl.value);
+    const secureUrl = await uploadLogoBrand(imageFile.value);
     try {
         const response = await brandStore.create({ ...brandInfo.value, logoUrl: secureUrl.secure_url })
+        closeBrandModal(false)
         if (response.status === 201) {
             isLoading.value = false
-            brands.value.push(response.data)
+            // brands.value.push(response.data)
             resetForm()
             Swal.fire({
                 title: "Thành công",
@@ -241,7 +256,14 @@ const saveBrand = async () => {
 }
 
 const uploadLogoBrand = async (file) => {
+    console.log(file)
     return uploadToCloudinary(file);
+}
+
+const changePage = async (page) => {
+    isLoading.value = true
+    await brandStore.fetchBrands(page)
+    isLoading.value = false
 }
 
 </script>

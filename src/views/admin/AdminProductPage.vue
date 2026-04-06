@@ -174,13 +174,13 @@ const productInfo = ref({
 })
 
 const loadBrands = async () => {
-    const result = await brandStore.fetchBrands();
-    brands.value = result.data;
+    const result = await brandStore.fetchBrands(1, 10);
+    brands.value = result.data.items;
 }
 
 const loadCategories = async () => {
-    const result = await categoryStore.fetchCategories();
-    categories.value = result.data;
+    const result = await categoryStore.fetchCategories(1, 10);
+    categories.value = result.data.items;
 }
 
 onMounted(async () => {

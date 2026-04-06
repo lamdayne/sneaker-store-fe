@@ -17,15 +17,27 @@
                 <router-link to="/search" aria-label="Search" class="hover:opacity-70 transition-opacity">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </router-link>
-                <router-link to="/login" aria-label="Login" class="hidden sm:block hover:opacity-70 transition-opacity">
+                <router-link :to="isLogin" aria-label="Login"
+                    class="hidden sm:block hover:opacity-70 transition-opacity">
                     <i class="fa-regular fa-user"></i>
                 </router-link>
-<router-link to="/cart" aria-label="Cart" class="relative hover:opacity-70 transition-opacity block cursor-pointer">
-    <i class="fa-solid fa-cart-shopping"></i>
-</router-link>
+                <router-link to="/cart" aria-label="Cart"
+                    class="relative hover:opacity-70 transition-opacity block cursor-pointer">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </router-link>
             </div>
         </div>
     </header>
 </template>
 
-<script setup></script>
+<script setup>
+import { useUserStore } from '@/store/userStore';
+import { computed } from 'vue';
+
+
+const userStore = useUserStore()
+
+const isLogin = computed(() =>
+    userStore.isAuthenticated ? '/auth/me' : '/login'
+)
+</script>
