@@ -40,7 +40,11 @@ const routes = [
     },
     {
         path: "/admin/product",
-        component: AdminProductPage
+        component: AdminProductPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/search',
@@ -81,27 +85,51 @@ const routes = [
     },
     {
         path: '/admin/dashboard',
-        component: DashboardPage
+        component: DashboardPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/admin/brand',
-        component: AdminBrandPage
+        component: AdminBrandPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/admin/category',
-        component: AdminCategoryPage
+        component: AdminCategoryPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/admin/order',
-        component: AdminOrderPage
+        component: AdminOrderPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/admin/user',
-        component: AdminUserPage
+        component: AdminUserPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     },
     {
         path: '/admin/product/list',
-        component: AdminProductListPage
+        component: AdminProductListPage,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     }
 ]
 
@@ -128,6 +156,12 @@ router.beforeEach((to, from, next) => {
                 redirect: to.fullPath
             }
         })
+    } else if (to.meta.requiresAdmin) {
+        if (userStore.isAdmin) {
+            next()
+        } else {
+            next('/')
+        }
     } else {
         next()
     }

@@ -62,42 +62,18 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 w-250 gap-4">
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span
-                        class="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-green-700 text-white rounded-md uppercase">Mặc
-                        định</span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
+                <div v-for="address in addresses" :key="address.id"
+                    class="w-full mt-4 border border-gray-600 rounded-lg p-4">
+                    <p class="text-[15px] font-medium">{{ address.recipientName }} | {{ address.phone }}</p>
+                    <span v-if="address.defaultAddress"
+                        class="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-green-700 text-white rounded-md uppercase">
+                        Mặc định
+                    </span>
+                    <span v-else class="ml-1 px-1.5 py-0.5"></span>
+                    <p class="text-sm mt-2 ml-1 text-gray-700">{{ getAddress(address) }}</p>
                     <div class="mt-3 ml-1 flex gap-4">
                         <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
                         <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
-                    </div>
-                </div>
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span class="ml-1 px-1.5 py-0.5"></span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
-                    <div class="mt-3 ml-1 flex gap-4 justify-between">
-                        <div class="flex gap-4">
-                            <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
-                            <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
-                        </div>
-                        <p class="text-sm cursor-pointer font-medium text-blue-500">Đặt làm mặc định</p>
-                    </div>
-                </div>
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span class="ml-1 px-1.5 py-0.5"></span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
-                    <div class="mt-3 ml-1 flex gap-4 justify-between">
-                        <div class="flex gap-4">
-                            <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
-                            <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
-                        </div>
-                        <p class="text-sm cursor-pointer font-medium text-blue-500">Đặt làm mặc định</p>
                     </div>
                 </div>
             </div>
@@ -107,5 +83,18 @@
 
 <script setup>
 import AccountManageSection from '@/components/AccountManageSection.vue';
+import { useUserStore } from '@/store/userStore';
+import { computed, onMounted } from 'vue';
 
+const userStore = useUserStore()
+
+const addresses = computed(() => userStore.addresses)
+
+onMounted(async () => {
+    await userStore.myInfo()
+})
+
+const getAddress = (address) => {
+    return `${address.streetAddress}, ${address.ward}, ${address.district}, ${address.province}`
+}
 </script>
