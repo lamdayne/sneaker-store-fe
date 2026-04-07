@@ -1,4 +1,10 @@
 <template>
+    <div v-if="isLoading"
+        class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
+        <div class="flex flex-col items-center gap-2">
+            <span class="animate-spin text-xl"><i class="fa-solid fa-hourglass"></i></span>
+        </div>
+    </div>
     <div v-if="productDetail === null">
         <SkeletonProductDetail></SkeletonProductDetail>
     </div>
@@ -10,17 +16,21 @@
 <script setup>
 import ProductDetail from '@/components/ProductDetail.vue';
 import SkeletonProductDetail from '@/components/SkeletonProductDetail.vue';
+import { useCartStore } from '@/store/CartStore';
 import { useProductStore } from '@/store/productStore';
 import { useUserStore } from '@/store/userStore';
 import Swal from 'sweetalert2';
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter()
 
+const isLoading = ref(false)
+
 const productStore = useProductStore();
 const userStore = useUserStore();
+const cartStore = useCartStore()
 
 const productDetail = computed(() => productStore.productDetail)
 const isLogin = computed(() => userStore.isAuthenticated)
@@ -30,7 +40,7 @@ onMounted(async () => {
     // console.log(productDetail.value)
 })
 
-const addToCart = (variant) => {
+const addToCart = async (variant) => {
     if (!isLogin.value) {
         router.push({
             path: '/login',
@@ -41,10 +51,37 @@ const addToCart = (variant) => {
         return
     }
     if (!validateInput(variant)) return
-    console.log(variant)
+    isLoading.value = true
+    const resp = await cartStore.addToCart(variant)
+    if (resp.status === 201) {
+        isLoading.value = false
+        Swal.fire({
+            title: "Thành công",
+            icon: "success",
+            draggable: true,
+            text: resp.message
+        })
+    } else {
+        isLoading.value = false
+        Swal.fire({
+            title: "Thất bại",
+            icon: "error",
+            draggable: true,
+            text: 'Lỗi khi thêm sản phẩm vào giỏ hàng'
+        });
+    }
 }
 
 const buyNow = (variant) => {
+    if (!isLogin.value) {
+        router.push({
+            path: '/login',
+            query: {
+                redirect: route.fullPath
+            }
+        })
+        return
+    }
     if (!validateInput(variant)) return
     console.log(variant)
 }

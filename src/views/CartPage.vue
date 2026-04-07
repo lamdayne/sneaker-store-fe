@@ -1,18 +1,24 @@
 <template>
     <div class="bg-white min-h-screen pt-10 pb-10 font-sans italic-none">
+        <div v-if="isLoading"
+            class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
+            <div class="flex flex-col items-center gap-2">
+                <span class="animate-spin text-xl"><i class="fa-solid fa-hourglass"></i></span>
+            </div>
+        </div>
         <div class="container mx-auto px-4 max-w-7xl">
             <div class="flex justify-between items-end border-b border-gray-200 pb-4 mb-10">
                 <h1 class="text-2xl font-bold font-serif uppercase tracking-tighter text-gray-950">
-                    Giỏ hàng ({{ cartStore.totalItems }})
+                    Giỏ hàng ({{ carts.length }})
                 </h1>
-                <label v-if="cartStore.totalItems > 0"
+                <!-- <label v-if="cartStore.totalItems > 0"
                     class="flex items-center gap-2 text-[10px] font-bold uppercase text-gray-400 cursor-pointer hover:text-black transition-colors">
                     <input type="checkbox" class="size-4 accent-black cursor-pointer" />
                     <span>Chọn tất cả</span>
-                </label>
+                </label> -->
             </div>
 
-            <div v-if="cartStore.totalItems === 0" class="flex flex-col items-center justify-center py-32 space-y-6">
+            <div v-if="carts.length === 0" class="flex flex-col items-center justify-center py-32 space-y-6">
                 <div class="size-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-300">
                     <i class="fa-solid fa-cart-plus text-4xl"></i>
                 </div>
@@ -25,40 +31,44 @@
             </div>
 
             <div v-else class="flex flex-col lg:flex-row gap-12 mb-20">
-                <div class="flex-1 flex flex-col gap-10">
-                    <div v-for="(item, index) in cartStore.items" :key="index"
-                        class="flex items-start gap-4 border-b border-gray-100 pb-10 last:border-0">
-
-                        <input type="checkbox" v-model="item.selected"
-                            class="mt-12 size-4 accent-black cursor-pointer" />
+                <div class="flex-1 flex flex-col gap-4">
+                    <div v-for="cart in carts" :key="cart.id"
+                        class="flex items-start gap-4 border-b border-gray-100 pb-4 last:border-0">
 
                         <div
                             class="size-32 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border border-gray-100">
-                            <img :src="item.image" class="w-full h-full object-contain mix-blend-multiply scale-110" />
+                            <img :src="cart.product.thumbnail"
+                                class="w-full h-full object-cover mix-blend-multiply scale-110" />
                         </div>
 
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <div class="space-y-1">
                                     <p class="text-[11px] font-bold text-red-600 uppercase tracking-widest">{{
-                                        item.brand }}</p>
-                                    <h3 class="text-xl font-bold tracking-tight text-gray-950">{{ item.name }}</h3>
-                                    <p class="text-[11px] text-gray-400 uppercase font-medium">Size: {{ item.size }}</p>
+                                        cart.product.brandName }}</p>
+                                    <router-link :to="`/product/${cart.product.id}`"
+                                        class="text-xl font-bold tracking-tight text-gray-950">{{ cart.product.name }}
+                                    </router-link>
+                                    <p class="text-[11px] text-gray-400 uppercase font-medium">
+                                        Size: {{ cart.size }} - Màu:
+                                        <span class="px-4 ml-1 rounded-lg"
+                                            :style="{ backgroundColor: cart.color }"></span>
+                                    </p>
                                 </div>
 
                                 <div class="flex flex-col items-end">
                                     <div
                                         class="flex items-center border border-gray-200 rounded-lg overflow-hidden mb-3">
-                                        <button @click="cartStore.decrementQty(index)"
-                                            class="px-3 py-1 text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer">-</button>
-                                        <span class="px-2 font-bold text-xs w-8 text-center">{{ item.quantity }}</span>
-                                        <button @click="cartStore.incrementQty(index)"
-                                            class="px-3 py-1 text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer">+</button>
+                                        <!-- <button
+                                            class="px-3 py-1 text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer">-</button> -->
+                                        <span class="px-2 font-bold text-xs w-8 text-center">{{ cart.quantity }}</span>
+                                        <!-- <button
+                                            class="px-3 py-1 text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer">+</button> -->
                                     </div>
                                     <p class="text-lg font-bold tracking-tighter text-gray-950">
-                                        {{ formatPrice(item.price * item.quantity) }} đ
+                                        {{ format.formatVND(cart.unitPrice * cart.quantity) }}
                                     </p>
-                                    <button @click="cartStore.removeItem(index)"
+                                    <button @click="removeCartItem(cart.id)"
                                         class="text-gray-300 hover:text-red-500 mt-3 transition-colors cursor-pointer">
                                         <i class="fa-solid fa-trash-can text-sm"></i>
                                     </button>
@@ -91,12 +101,13 @@
                             <div class="flex flex-col gap-4 border-b border-gray-50 pb-6">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-400 font-medium font-sans italic">Tạm tính</span>
-                                    <span class="font-bold text-gray-950 tracking-tight">{{
-                                        formatPrice(cartStore.subTotal) }} đ</span>
+                                    <span class="font-bold text-gray-950 tracking-tight">
+                                        {{ format.formatVND(totalPrice) }}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between text-sm text-gray-400 italic">
                                     <span class="font-sans italic">Phí vận chuyển</span>
-                                    <span class="font-bold text-gray-950 italic">35.000 đ</span>
+                                    <span class="font-bold text-gray-950 italic">0 đ</span>
                                 </div>
                                 <div class="flex justify-between text-sm text-green-600 italic">
                                     <span class="font-sans italic">Giảm giá</span>
@@ -106,56 +117,71 @@
 
                             <div class="flex justify-between items-end">
                                 <span class="text-sm font-bold uppercase italic tracking-tighter">Tổng cộng</span>
-                                <span class="text-2xl font-bold text-red-600 tracking-tighter">{{
-                                    formatPrice(cartStore.subTotal + 35000) }} đ</span>
+                                <span class="text-2xl font-bold text-red-600 tracking-tighter">
+                                    {{ format.formatVND(totalPrice) }}
+                                </span>
                             </div>
 
                             <button
                                 class="w-full bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all cursor-pointer shadow-lg">
                                 Thanh toán ngay
                             </button>
-
-                            <div class="flex flex-col items-center gap-4 mt-2">
-                                <div class="flex gap-4 opacity-30 grayscale scale-75">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-                                        class="h-3" />
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                                        class="h-5" />
-                                </div>
-                                <p class="text-[9px] text-gray-400 font-bold tracking-widest uppercase">
-                                    <i class="fa-solid fa-lock me-1"></i> SSL 256-BIT BẢO MẬT GIAO DỊCH
-                                </p>
-                            </div>
                         </div>
                     </div>
-                    <p class="text-center mt-6 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                        Cần hỗ trợ? Gọi ngay <span class="text-red-600 border-b border-red-600">1900 1000</span>
-                    </p>
                 </div>
             </div>
         </div>
-
-        <footer class="border-t border-gray-100 pt-10">
-            <div class="container mx-auto px-4 max-w-7xl flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="font-playfair text-xl font-bold tracking-tighter text-red-600 uppercase">
-                    SOLEHAUS
-                </div>
-                <div class="flex gap-8 text-[11px] font-bold uppercase text-gray-400">
-                    <a href="#" class="hover:text-black transition-colors">Chính sách bảo mật</a>
-                    <a href="#" class="hover:text-black transition-colors">Điều khoản dịch vụ</a>
-                    <a href="#" class="hover:text-black transition-colors">Chính sách đổi trả</a>
-                </div>
-                <div class="text-[11px] text-gray-300 font-medium">
-                    © 2024 Solehaus. All rights reserved.
-                </div>
-            </div>
-        </footer>
     </div>
 </template>
 
 <script setup>
 import { useCartStore } from '@/store/CartStore';
+import { format } from '@/utils/format';
+import Swal from 'sweetalert2';
+import { computed, onMounted, ref } from 'vue';
+
+const isLoading = ref(false)
 
 const cartStore = useCartStore();
-const formatPrice = (val) => new Intl.NumberFormat('vi-VN').format(val);
+const carts = computed(() => cartStore.carts)
+const totalPrice = computed(() => {
+    return carts.value.reduce((total, cart) => {
+        return total + cart.unitPrice * cart.quantity
+    }, 0)
+})
+
+onMounted(async () => {
+    isLoading.value = true
+    await cartStore.fetchMyCart()
+    isLoading.value = false
+    console.log(carts.value)
+})
+
+const removeCartItem = async (id) => {
+    try {
+        isLoading.value = true
+        const resp = await cartStore.removeCartItem(id)
+        if (resp.status === 204) {
+            isLoading.value = false
+            Swal.fire({
+                title: "Thành công",
+                icon: "success",
+                draggable: true,
+                text: resp.message
+            })
+        } else {
+            isLoading.value = false
+            Swal.fire({
+                title: "Thất bại",
+                icon: "error",
+                draggable: true,
+                text: 'Lỗi khi thêm sản phẩm vào giỏ hàng'
+            });
+        }
+        await cartStore.fetchMyCart()
+    } catch (error) {
+        isLoading.value = false
+        console.error(error)
+    }
+}
 </script>

@@ -5,14 +5,14 @@
                 <i class="fa-solid fa-shoe-prints"></i>
                 SOLEHAUS
             </router-link>
-            <nav class="hidden lg:flex items-center space-x-8 text-[14px] font-medium uppercase tracking-tight">
+            <!-- <nav class="hidden lg:flex items-center space-x-8 text-[14px] font-medium uppercase tracking-tight">
                 <a class="hover:text-accent transition-colors" href="#">Trang chủ</a>
                 <a class="hover:text-accent transition-colors" href="#">Nam</a>
                 <a class="hover:text-accent transition-colors" href="#">Nữ</a>
                 <a class="hover:text-accent transition-colors" href="#">Trẻ em</a>
                 <a class="hover:text-accent transition-colors" href="#">Thương hiệu</a>
                 <a class="hover:text-accent transition-colors text-accent" href="#">Sale</a>
-            </nav>
+            </nav> -->
             <div class="flex items-center space-x-5">
                 <router-link to="/search" aria-label="Search" class="hover:opacity-70 transition-opacity">
                     <i class="fa-solid fa-magnifying-glass"></i>

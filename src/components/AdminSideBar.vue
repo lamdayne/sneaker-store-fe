@@ -73,10 +73,10 @@
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0ZH6zhd7WX4jay2MkpBAe0QvgNU2IXE8rMEObVoXtx1X8fWUb5FB3EVnxHU1qfw634t8NSCR-8MrV4xu4h4C-3rUHmEEoSjaC4QbqzT7vkUim2iJB3JzuM0a6ISSFrLxK-MM6ber1t_GiOOqaKfgGMRzS0MOAGIsZ2ikz7NajPx7LaHSepwWqsjqoiLTaBk--iktY-QbEeke-YQVhBzfSm1vDP5n1__4WUnYsnU3w5gaPkNQj55yXG3Bl3feTlQ0QHfw5GwR94So" />
                 </div>
                 <div class="flex-1 overflow-hidden">
-                    <p class="text-white text-[12px] font-medium truncate">Alexander S.</p>
-                    <p class="text-slate-500 text-[10px] truncate">Senior Manager</p>
+                    <p class="text-white text-[12px] font-medium truncate">{{ user.fullName }}</p>
+                    <p class="text-slate-500 text-[10px] truncate">{{ user.role }}</p>
                 </div>
-                <button class="text-slate-400 hover:text-accent">
+                <button class="text-slate-400 hover:text-accent cursor-pointer" @click="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             </div>
@@ -85,15 +85,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useUserStore } from '@/store/userStore';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const isProductMenuOpen = ref(false);
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const user = computed(() => userStore.user)
 
 const toggleProductMenu = () => {
     isProductMenuOpen.value = !isProductMenuOpen.value;
 }
 
+onMounted(async () => {
+    await userStore.myInfo()
+})
+
 const isActive = (path) => route.path.includes(path)
+
+const logout = async () => {
+    const body = {
+        token: localStorage.getItem('accessToken')
+    }
+    await userStore.logout(JSON.stringify(body))
+    router.push('/')
+}
 </script>

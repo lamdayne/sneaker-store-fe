@@ -1,14 +1,23 @@
 import axiosInstance from "@/axios/axios";
+import { decodeJWT } from "@/utils/jwt";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useUserStore = defineStore('user', () => {
     const user = ref({})
     const users = ref([])
+    const addresses = ref([])
     const accessToken = ref(localStorage.getItem('accessToken') || null)
     const refreshToken = ref(localStorage.getItem('refreshToken') || null)
 
     const isAuthenticated = computed(() => !!accessToken.value)
+
+    const decodeToken = computed(() => {
+        if (!accessToken.value) return null
+        return decodeJWT(accessToken.value)
+    })
+
+    const isAdmin = computed(() => decodeToken.value?.scope === 'ADMIN')
 
     const fetchUsers = async (pageNo = 0, pageSize = 8, sortBy = 'fullName:asc') => {
         try {
@@ -24,6 +33,10 @@ export const useUserStore = defineStore('user', () => {
     const login = async (user) => {
         try {
             const response = await axiosInstance.post(`/auth/token`, user);
+            if (response.status === 401 || response.status === 404) {
+                return { status: response.status }
+            }
+            console.log('Success')
             const { accessToken: at, refreshToken: rt } = response.data
 
             accessToken.value = at
@@ -57,6 +70,19 @@ export const useUserStore = defineStore('user', () => {
         try {
             const response = await axiosInstance.get(`/auth/me`);
             user.value = response.data
+            addresses.value = response.data.addresses
+            console.log(addresses.value)
+            return response
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error)
+        }
+    }
+
+    const updateUser = async (id, body) => {
+        try {
+            const response = await axiosInstance.put(`/users/${id}`, body);
+            user.value = response.data
             return response
         } catch (error) {
             console.log(error)
@@ -71,6 +97,9 @@ export const useUserStore = defineStore('user', () => {
         isAuthenticated,
         logout,
         myInfo,
-        user
+        user,
+        isAdmin,
+        updateUser,
+        addresses
     }
 })
