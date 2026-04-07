@@ -24,6 +24,10 @@ export const useUserStore = defineStore('user', () => {
     const login = async (user) => {
         try {
             const response = await axiosInstance.post(`/auth/token`, user);
+            if (response.status === 401 || response.status === 404) {
+                return { status: response.status }
+            }
+            console.log('Success')
             const { accessToken: at, refreshToken: rt } = response.data
 
             accessToken.value = at

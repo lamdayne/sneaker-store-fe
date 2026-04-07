@@ -99,6 +99,7 @@ const login = async () => {
                 text: 'Sai mật khẩu'
             });
         }
+        return;
     } else {
         Swal.fire({
             title: "Thành công",
