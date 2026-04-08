@@ -20,6 +20,7 @@ import AdminOrderPage from "@/views/admin/AdminOrderPage.vue";
 import AdminUserPage from "@/views/admin/AdminUserPage.vue";
 import AdminProductListPage from "@/views/admin/AdminProductListPage.vue";
 import { useUserStore } from "@/store/userStore";
+import CheckoutPage from "@/views/CheckoutPage.vue";
 
 const routes = [
     {
@@ -130,6 +131,10 @@ const routes = [
             requiresAuth: true,
             requiresAdmin: true
         }
+    },
+    {
+        path: '/order/checkout',
+        component: CheckoutPage
     }
 ]
 

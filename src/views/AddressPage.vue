@@ -14,7 +14,7 @@
                 </button>
             </div>
             <ModelSection :is-open="isOpen" @close-modal="closeModal">
-                <div class="w-250 mt-4 border-2 rounded-lg p-4">
+                <div class="w-250 border-2 rounded-lg p-4">
                     <h1 class="p-4 text-2xl font-serif font-bold">
                         <i class="fa-solid fa-pen-to-square"></i>
                         Cập nhật địa chỉ
