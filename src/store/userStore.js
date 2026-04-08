@@ -70,8 +70,7 @@ export const useUserStore = defineStore('user', () => {
         try {
             const response = await axiosInstance.get(`/auth/me`);
             user.value = response.data
-            addresses.value = response.data.addresses
-            console.log(addresses.value)
+            addresses.value = response.data.addresses.filter((address) => address.isActive)
             return response
         } catch (error) {
             console.log(error)

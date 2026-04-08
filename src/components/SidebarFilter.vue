@@ -110,7 +110,7 @@ import { format } from '@/utils/format';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useBrandStore } from '@/store/brandStore';
 
-const price = ref(0)
+const price = ref(5000000)
 const isCategoryOpen = ref(false)
 const isBrandOpen = ref(false)
 const isSizeOpen = ref(false)

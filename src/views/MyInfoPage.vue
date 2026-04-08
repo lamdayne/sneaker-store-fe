@@ -52,7 +52,7 @@
 import AccountManageSection from '@/components/AccountManageSection.vue';
 import { useUserStore } from '@/store/userStore';
 import Swal from 'sweetalert2';
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 const isLoading = ref(false)
 const userStore = useUserStore()
@@ -63,13 +63,6 @@ const user = reactive({
     password: null,
     avatarUrl: null,
     active: true
-})
-
-onMounted(async () => {
-    isLoading.value = true
-    await userStore.myInfo()
-    Object.assign(user, userStore.user)
-    isLoading.value = false
 })
 
 const updateInfo = async (id) => {
@@ -103,4 +96,15 @@ const updateInfo = async (id) => {
         isLoading.value = false
     }
 }
+
+watch(
+    () => userStore.user,
+    (newUser) => {
+        if (newUser) {
+            Object.assign(user, newUser)
+        }
+    },
+    { immediate: true }
+)
+
 </script>
