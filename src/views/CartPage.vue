@@ -122,7 +122,7 @@
                                 </span>
                             </div>
 
-                            <button
+                            <button @click="checkout"
                                 class="w-full bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all cursor-pointer shadow-lg">
                                 Thanh toán ngay
                             </button>
@@ -140,9 +140,11 @@ import { useOrderStore } from '@/store/orderStore';
 import { format } from '@/utils/format';
 import Swal from 'sweetalert2';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 const isLoading = ref(false)
 
+const router = useRouter()
 const cartStore = useCartStore();
 const orderStore = useOrderStore()
 
@@ -169,6 +171,10 @@ watch(() => carts.value, (carts) => {
     }))
     console.log(orderStore.orderItems)
 })
+
+const checkout = () => {
+    router.push('/order/checkout')
+}
 
 const removeCartItem = async (id) => {
     try {

@@ -5,7 +5,8 @@
     </div>
     <div v-else
         class="container mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center mb-16">
-        <ProductItem :product="product" v-for="product in products.slice(0, limit)" :key="product.id" />
+        <ProductItem :product="product" v-for="product in products.filter(product => product.featured).slice(0, limit)"
+            :key="product.id" />
     </div>
 </template>
 
