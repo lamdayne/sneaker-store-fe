@@ -76,6 +76,16 @@ export const useAddressStore = defineStore('address', () => {
         }
     }
 
+    const getAddressById = async (id) => {
+        try {
+            const response = await axiosInstance.get(`/addresses/${id}`);
+            return response
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error)
+        }
+    }
+
     return {
         provinces,
         districts,
@@ -86,6 +96,7 @@ export const useAddressStore = defineStore('address', () => {
         clearStore,
         createAddress,
         deleteAddress,
-        updateAddress
+        updateAddress,
+        getAddressById
     }
 })
