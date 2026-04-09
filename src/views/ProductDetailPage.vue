@@ -87,6 +87,7 @@ const buyNow = (variant) => {
     if (!validateInput(variant)) return
     orderStore.orderItems = [variant]
     console.log(orderStore.orderItems)
+    router.push('/order/checkout')
 }
 
 const validateInput = (variant) => {

@@ -17,7 +17,7 @@
                 <div class="w-250 border-2 rounded-lg p-4">
                     <h1 class="p-4 text-2xl font-serif font-bold">
                         <i class="fa-solid fa-pen-to-square"></i>
-                        Cập nhật địa chỉ
+                        {{ isEdit ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ' }}
                     </h1>
                     <div class="px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
