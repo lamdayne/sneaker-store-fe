@@ -268,6 +268,15 @@ const validateForm = () => {
 }
 
 const payment = () => {
+    orderStore.orderInfo = {
+        shippingAddressId: selectedAddress.value,
+        subtotal: getTotalPrice(),
+        totalAmount: getTotalPrice(),
+        shippingFee: 0,
+        discountAmount: 0,
+        paymentMethod: '',
+        note: 'note'
+    }
     router.push('/order/payment')
 }
 

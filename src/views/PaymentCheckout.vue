@@ -28,7 +28,8 @@
                 <label class="payment-option block">
                     <div
                         class="flex items-center gap-6 border border-gray-200 rounded-xl p-4 hover:border-gray-900 transition-all cursor-pointer">
-                        <input type="radio" v-model="paymentMethod" name="paymentMethod" value="cod" class="w-5 h-5">
+                        <input type="radio" v-model="orderStore.orderInfo.paymentMethod" name="paymentMethod"
+                            value="COD" class="w-5 h-5">
                         <div class="flex-1">
                             <div class="font-medium">Thanh toán khi nhận hàng (COD)</div>
                             <div class="text-sm text-gray-500">Thanh toán bằng tiền mặt khi nhận hàng</div>
@@ -40,7 +41,8 @@
                 <label class="payment-option block">
                     <div
                         class="flex items-center gap-6 border border-gray-200 rounded-xl p-4 hover:border-gray-900 transition-all cursor-pointer">
-                        <input type="radio" v-model="paymentMethod" name="paymentMethod" value="pay" class="w-5 h-5">
+                        <input type="radio" v-model="orderStore.orderInfo.paymentMethod" name="paymentMethod"
+                            value="PAY" class="w-5 h-5">
                         <div class="flex-1">
                             <div class="font-medium">Thanh toán hình thức chuyển khoản</div>
                             <div class="text-sm text-gray-500">Thanh toán bằng tiền mặt khi nhận hàng</div>
@@ -94,7 +96,7 @@
                                 <span class="font-bold italic">-0đ</span>
                             </div>
                         </div>
-                        <button
+                        <button @click="pay"
                             class="w-full bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all cursor-pointer shadow-lg">
                             Thanh toán ngay
                         </button>
@@ -115,6 +117,7 @@
 import { useOrderStore } from '@/store/orderStore';
 import { useUserStore } from '@/store/userStore';
 import { format } from '@/utils/format';
+import Swal from 'sweetalert2';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -127,8 +130,10 @@ const orderStore = useOrderStore()
 const addresses = computed(() => userStore.addresses)
 const orderItems = computed(() => orderStore.orderItems)
 const products = computed(() => orderStore.productOrders)
+const orderId = ref('');
 
 onMounted(async () => {
+    if (orderItems.value.length <= 0) router.push('/')
     isLoading.value = true
     await userStore.myInfo()
     const defaultAddr = addresses.value.find(a => a.defaultAddress)
@@ -136,12 +141,57 @@ onMounted(async () => {
         selectedAddress.value = defaultAddr.id
     }
     isLoading.value = false
+    console.log(orderStore.orderInfo)
 })
 
 const getTotalPrice = () => {
     return orderItems.value.reduce((total, value) => {
         return total + value.quantity * value.unitPrice
     }, 0)
+}
+
+const pay = async () => {
+    if (!orderStore.orderInfo.paymentMethod) {
+        Swal.fire({
+            title: 'Chưa chọn phương thức thanh toán',
+            icon: 'warning',
+            text: 'Vui lòng chọn một phương thức thanh toán',
+            confirmButtonText: 'OK'
+        })
+        return
+    }
+    console.log(orderStore.orderInfo)
+    await createOrder()
+}
+
+const createOrder = async () => {
+    isLoading.value = true
+    try {
+        const resp = await orderStore.createOrder({ ...orderStore.orderInfo })
+        if (resp.status === 201) {
+            await createOrderItem(resp.data.id)
+            router.push('/order/success')
+        } else {
+            Swal.fire({
+                title: "Thất bại",
+                icon: "error",
+                draggable: true,
+                text: 'Lỗi khi tạo đơn hàng'
+            });
+        }
+    } catch (error) {
+        console.error(error)
+    } finally {
+        isLoading.value = false
+    }
+    console.log(orderId.value)
+}
+
+const createOrderItem = async (orderId) => {
+    const items = orderStore.orderItems.map((orderItem) => ({ ...orderItem, orderId }))
+    const promises = items.map(item => orderStore.createOrderItem(item))
+
+    await Promise.all(promises)
 }
 
 </script>

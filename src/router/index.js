@@ -22,6 +22,7 @@ import AdminProductListPage from "@/views/admin/AdminProductListPage.vue";
 import { useUserStore } from "@/store/userStore";
 import CheckoutPage from "@/views/CheckoutPage.vue";
 import PaymentCheckout from "@/views/PaymentCheckout.vue";
+import OrderSuccess from "@/views/OrderSuccess.vue";
 
 const routes = [
     {
@@ -142,7 +143,17 @@ const routes = [
     },
     {
         path: '/order/payment',
-        component: PaymentCheckout
+        component: PaymentCheckout,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/order/success',
+        component: OrderSuccess,
+        meta: {
+            requiresAuth: true
+        }
     }
 ]
 
