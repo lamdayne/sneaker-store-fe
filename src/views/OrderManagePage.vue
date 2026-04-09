@@ -1,104 +1,73 @@
 <template>
     <AccountManageSection>
-        <div class="mt-4 mb-4 mx-auto">
-            <h1 class="text-2xl font-serif font-bold">Đơn hàng của tôi</h1>
-            <div class="w-250 mt-4 border border-2 rounded-lg p-4">
-                <h1 class="p-4 text-2xl font-serif font-bold">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    Cập nhật địa chỉ
-                </h1>
-                <div class="px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Họ tên người nhận</label>
-                        <input class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none"
-                            type="text" />
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Số điện thoại</label>
-                        <input class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none"
-                            type="text" />
-                    </div>
-                </div>
-                <div class="px-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Tỉnh / Thành phố</label>
-                        <select
-                            class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none appearance-none"
-                            name="" id=""></select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Quận / Huyện</label>
-                        <select
-                            class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none appearance-none"
-                            name="" id=""></select>
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Phường / Xã</label>
-                        <select
-                            class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none appearance-none"
-                            name="" id=""></select>
-                    </div>
-                </div>
-                <div class="px-4 grid grid-cols-1 md:grid-cols-1 gap-6 mt-4 mb-2">
-                    <div>
-                        <label class="text-xs font-bold uppercase text-gray-600">Tỉnh / Thành phố</label>
-                        <textarea name="" class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md outline-none"
-                            id=""></textarea>
-                    </div>
-                </div>
-                <div class="px-4 flex gap-2 items-center">
-                    <input class="" type="checkbox" name="" id="defaultAddress">
-                    <label class="text-xs font-bold uppercase text-gray-600 cursor-pointer" for="defaultAddress">Đặt làm
-                        địa chỉ mặc
-                        định</label>
-                </div>
-                <div class="px-4 flex gap-4 mt-3">
-                    <button class="py-2.5 px-6 font-medium bg-gray-950 rounded-xl text-white cursor-pointer">
-                        Lưu thay đổi
-                    </button>
-                    <button class="py-2.5 px-6 font-medium bg-gray-300 rounded-xl cursor-pointer">
-                        Hủy
-                    </button>
-                </div>
+        <div class="flex-1 p-8 bg-white min-h-screen">
+            <h1 class="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
+
+            <div class="flex space-x-8 border-b border-gray-200 mb-6 overflow-x-auto">
+                <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
+                    'pb-4 text-sm font-medium transition-colors relative whitespace-nowrap',
+                    activeTab === tab.id ? 'text-red-600' : 'text-gray-500 hover:text-gray-700'
+                ]">
+                    {{ tab.label }}
+                    <span v-if="tab.count" class="ml-1 bg-gray-100 px-2 py-0.5 rounded-full text-xs">
+                        {{ tab.count }}
+                    </span>
+                    <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-0.5 bg-red-600"></div>
+                </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 w-250 gap-4">
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span
-                        class="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-green-700 text-white rounded-md uppercase">Mặc
-                        định</span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
-                    <div class="mt-3 ml-1 flex gap-4">
-                        <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
-                        <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
-                    </div>
-                </div>
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span class="ml-1 px-1.5 py-0.5"></span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
-                    <div class="mt-3 ml-1 flex gap-4 justify-between">
-                        <div class="flex gap-4">
-                            <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
-                            <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
+
+            <div class="relative mb-6">
+                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+                <input type="text" placeholder="Tìm theo mã đơn hoặc tên sản phẩm"
+                    class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300" />
+            </div>
+
+            <div class="space-y-4">
+                <div v-for="order in listOrders" :key="order.id"
+                    class="border border-gray-100 rounded-xl p-6 shadow-sm">
+
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-bold">#{{ order.id }}</span>
+                            <span class="text-gray-400 text-sm">Đặt ngày {{ order.date }}</span>
                         </div>
-                        <p class="text-sm cursor-pointer font-medium text-blue-500">Đặt làm mặc định</p>
+                        <span
+                            class="text-[10px] font-bold px-3 py-1 rounded uppercase tracking-wider bg-gray-50 text-gray-600">
+                            {{ order.statusLabel }}
+                        </span>
                     </div>
-                </div>
-                <div class="w-full mt-4 border border-gray-600 rounded-lg p-4">
-                    <p class="text-[15px] font-medium">Nguyen Van A | 0789345678</p>
-                    <span class="ml-1 px-1.5 py-0.5"></span>
-                    <p class="text-sm mt-2 ml-1 text-gray-700">123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí
-                        Minh</p>
-                    <div class="mt-3 ml-1 flex gap-4 justify-between">
-                        <div class="flex gap-4">
-                            <button class="uppercase text-xs font-bold cursor-pointer">Chỉnh sửa</button>
-                            <button class="uppercase text-xs font-bold text-red-500 cursor-pointer">Xóa</button>
+
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="flex -space-x-2">
+                            <div v-for="(img, index) in order.images" :key="index"
+                                class="w-16 h-16 border border-gray-100 rounded-lg overflow-hidden bg-gray-50">
+                                <img :src="img" class="w-full h-full object-cover" />
+                            </div>
                         </div>
-                        <p class="text-sm cursor-pointer font-medium text-blue-500">Đặt làm mặc định</p>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-700 line-clamp-1">{{ order.productName }}</p>
+                        </div>
                     </div>
+
+                    <div class="flex justify-between items-center pt-4">
+                        <div class="text-sm">
+                            <span class="text-gray-500">Tổng cộng:</span>
+                            <span class="ml-2 font-bold text-lg">{{ order.totalPrice }}đ</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="px-6 py-2 rounded-lg text-sm font-semibold border border-gray-200">Chi
+                                tiết</button>
+                            <button class="px-6 py-2 rounded-lg text-sm font-semibold bg-black text-white">Mua
+                                lại</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -107,6 +76,17 @@
 
 <script setup>
 import AccountManageSection from '@/components/AccountManageSection.vue';
+import { ref } from 'vue'
+const activeTab = ref('all')
+const tabs = ref([
+    { id: 'all', label: 'Tất cả', count: 0 },
+    { id: 'pending', label: 'Chờ xác nhận', count: 0 },
+    { id: 'processing', label: 'Đang xử lý', count: 0 },
+    { id: 'shipping', label: 'Đang giao', count: 0 },
+    { id: 'completed', label: 'Đã giao', count: 0 },
+    { id: 'cancelled', label: 'Đã hủy', count: 0 },
+])
 
+const listOrders = ref([])
 
 </script>
