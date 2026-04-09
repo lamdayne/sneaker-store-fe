@@ -17,6 +17,7 @@
 import ProductDetail from '@/components/ProductDetail.vue';
 import SkeletonProductDetail from '@/components/SkeletonProductDetail.vue';
 import { useCartStore } from '@/store/CartStore';
+import { useOrderStore } from '@/store/orderStore';
 import { useProductStore } from '@/store/productStore';
 import { useUserStore } from '@/store/userStore';
 import Swal from 'sweetalert2';
@@ -31,6 +32,7 @@ const isLoading = ref(false)
 const productStore = useProductStore();
 const userStore = useUserStore();
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
 
 const productDetail = computed(() => productStore.productDetail)
 const isLogin = computed(() => userStore.isAuthenticated)
@@ -83,7 +85,8 @@ const buyNow = (variant) => {
         return
     }
     if (!validateInput(variant)) return
-    console.log(variant)
+    orderStore.orderItems = [variant]
+    console.log(orderStore.orderItems)
 }
 
 const validateInput = (variant) => {

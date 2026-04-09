@@ -136,13 +136,16 @@
 
 <script setup>
 import { useCartStore } from '@/store/CartStore';
+import { useOrderStore } from '@/store/orderStore';
 import { format } from '@/utils/format';
 import Swal from 'sweetalert2';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const isLoading = ref(false)
 
 const cartStore = useCartStore();
+const orderStore = useOrderStore()
+
 const carts = computed(() => cartStore.carts)
 const totalPrice = computed(() => {
     return carts.value.reduce((total, cart) => {
@@ -154,7 +157,17 @@ onMounted(async () => {
     isLoading.value = true
     await cartStore.fetchMyCart()
     isLoading.value = false
-    console.log(carts.value)
+})
+
+watch(() => carts.value, (carts) => {
+    orderStore.orderItems = carts.map(item => ({
+        productId: item.product.id,
+        size: item.size,
+        unitPrice: item.unitPrice,
+        quantity: item.quantity,
+        color: item.color
+    }))
+    console.log(orderStore.orderItems)
 })
 
 const removeCartItem = async (id) => {

@@ -7,6 +7,12 @@
 
 <script setup>
 import SideBarUser from '@/components/SideBarUser.vue';
+import { useUserStore } from '@/store/userStore';
+import { onMounted } from 'vue';
 
+const userStore = useUserStore()
 
+onMounted(async () => {
+    await userStore.myInfo()
+})
 </script>

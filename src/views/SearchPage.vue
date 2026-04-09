@@ -41,8 +41,8 @@ import SkeletonProductItem from '@/components/SkeletonProductItem.vue';
 
 const productStore = useProductStore();
 const searchInfo = ref({
-    name: null,
-    price: 0
+    name: '',
+    price: 5000000
 })
 
 const isLoading = ref(false)
@@ -58,6 +58,7 @@ onMounted(async () => {
 const search = async () => {
     isLoading.value = true
     await productStore.search({ ...searchInfo.value, pageNo: 0, pageSize: 12, sortBy: 'name' })
+    console.log(searchInfo.value)
     isLoading.value = false
 }
 

@@ -39,7 +39,7 @@
 
 <script setup>
 import { useUserStore } from '@/store/userStore';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -47,10 +47,6 @@ const router = useRouter();
 const userStore = useUserStore()
 
 const user = computed(() => userStore.user)
-
-onMounted(async () => {
-    await userStore.myInfo()
-})
 
 const isActive = (path) => {
     return route.fullPath === path
