@@ -66,8 +66,8 @@
                         <td class="p-4">{{ getTotalStock(product.productVariants) }}</td>
                         <td class="p-4">
                             <span
-                                class="inline-flex items-center rounded-md bg-green-400/10 px-2 py-1 text-xs font-medium text-green-400 inset-ring inset-ring-green-500/20">
-                                Đang bán
+                                :class="['inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring inset-ring-green-500/20', product.active ? 'bg-green-400/10 text-green-400' : 'bg-gray-400/10 text-gray-400']">
+                                {{ product.active ? 'Đang bán' : 'Ẩn' }}
                             </span>
                         </td>
                         <td class="p-4">

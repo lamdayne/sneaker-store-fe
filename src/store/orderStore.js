@@ -8,6 +8,7 @@ export const useOrderStore = defineStore('order', () => {
     const productOrders = ref([])
     const orderInfo = ref({})
     const listOrders = ref([])
+    const orders = ref([])
 
     const createOrder = async (body) => {
         try {
@@ -52,6 +53,43 @@ export const useOrderStore = defineStore('order', () => {
         orderInfo.value = {}
     }
 
+    const createPaymentQR = async (body) => {
+        try {
+            const response = await axiosInstance.post(`/payment/payos`, body)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const checkPaymentStatus = async (orderCode) => {
+        try {
+            const response = await axiosInstance.get(`/orders/${orderCode}/payment-status`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const cancelOrder = async (orderCode) => {
+        try {
+            const response = await axiosInstance.post(`/orders/cancel/${orderCode}`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const getAllOrder = async (pageNo = 1, pageSize = 8, sortBy = 'id:asc') => {
+        try {
+            const response = await axiosInstance.get(`/orders?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`)
+            orders.value = response.data.items
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return {
         orderItems,
         productOrders,
@@ -61,6 +99,11 @@ export const useOrderStore = defineStore('order', () => {
         clearStore,
         getAllMyOrder,
         listOrders,
-        getOrderById
+        getOrderById,
+        createPaymentQR,
+        checkPaymentStatus,
+        cancelOrder,
+        getAllOrder,
+        orders
     }
 })

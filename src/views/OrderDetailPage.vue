@@ -128,8 +128,8 @@
                     </div>
 
                     <div class="text-center">
-                        <button @click="$emit('cancelOrder', order.id)"
-                            class="w-full py-3 border border-red-500 text-red-500 font-bold rounded-lg hover:bg-red-50 transition">
+                        <button @click="cancelOrder" :disabled="order.status !== 'PENDING'"
+                            class="w-full py-3 border border-red-500 text-red-500 font-bold rounded-lg hover:bg-red-50 transition cursor-pointer">
                             HỦY ĐƠN HÀNG
                         </button>
                         <p class="text-[10px] text-gray-400 mt-4 px-4 italic">
@@ -147,13 +147,14 @@ import { useAddressStore } from '@/store/addressStore';
 import { useOrderStore } from '@/store/orderStore';
 import { format } from '@/utils/format';
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 defineEmits(['cancelOrder'])
 
 const orderStore = useOrderStore()
 const addressStore = useAddressStore()
 const route = useRoute()
+const router = useRouter()
 
 const order = ref(null)
 const address = ref(null)
@@ -190,4 +191,9 @@ const statusClass = computed(() => {
     return 'bg-orange-100 text-orange-600'
 })
 
+const cancelOrder = async () => {
+    const orderCode = order.value.orderCode
+    await orderStore.cancelOrder(orderCode)
+    router.push('/auth/order')
+}
 </script>

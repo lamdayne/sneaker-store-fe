@@ -12,30 +12,30 @@
             </div> -->
 
             <!-- Filters Section -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-6">
-                <div class="flex flex-wrap items-center gap-6">
-                    <!-- Search -->
-                    <div class="flex-1 min-w-[300px] relative">
+            <!-- <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-6">
+                <div class="flex flex-wrap items-center gap-6"> -->
+            <!-- Search -->
+            <!-- <div class="flex-1 min-w-[300px] relative">
                         <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="18" />
                         <input v-model="searchQuery" type="text" placeholder="Tìm kiếm tên, email, số điện thoại..."
                             class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-red-500 text-sm outline-none" />
-                    </div>
+                    </div> -->
 
-                    <!-- Date Range -->
-                    <div class="flex items-center gap-3">
+            <!-- Date Range -->
+            <!-- <div class="flex items-center gap-3">
                         <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ngày đăng ký:</span>
                         <div
                             class="flex items-center gap-2 bg-slate-50 px-4 py-2.5 rounded-lg border-none cursor-pointer">
                             <Calendar class="text-slate-400" :size="18" />
                             <span class="text-sm text-slate-600">{{ dateRange }}</span>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <!-- Divider -->
-                    <div class="h-8 w-px bg-slate-100 mx-2"></div>
+            <!-- Divider -->
+            <!-- <div class="h-8 w-px bg-slate-100 mx-2"></div> -->
 
-                    <!-- Toggle Filter -->
-                    <div class="flex items-center gap-3">
+            <!-- Toggle Filter -->
+            <!-- <div class="flex items-center gap-3">
                         <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Có đơn hàng:</span>
                         <button @click="hasOrdersFilter = !hasOrdersFilter" :class="[
                             'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none',
@@ -46,9 +46,9 @@
                                 hasOrdersFilter ? 'translate-x-6' : 'translate-x-1'
                             ]" />
                         </button>
-                    </div>
-                </div>
-            </div>
+                    </div> -->
+            <!-- </div>
+            </div> -->
 
             <!-- Table Container -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden relative min-h-[400px]">
@@ -74,10 +74,10 @@
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Khách hàng
                             </th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Liên hệ</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+                            <!-- <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
                                 Đơn hàng</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
-                                Tổng chi tiêu</th>
+                                Tổng chi tiêu</th> -->
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ngày đăng ký
                             </th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
@@ -103,7 +103,7 @@
                                 <div class="text-sm text-slate-600">{{ user.email }}</div>
                                 <div class="text-xs text-slate-400 mt-0.5">{{ user.phone }}</div>
                             </td>
-                            <td class="px-6 py-4 text-center">
+                            <!-- <td class="px-6 py-4 text-center">
                                 <span
                                     class="inline-flex items-center justify-center bg-slate-50 text-slate-700 font-medium px-3 py-1 rounded-md text-sm min-w-[32px]">
                                     12
@@ -111,7 +111,7 @@
                             </td>
                             <td class="px-6 py-4 text-right font-bold text-slate-800 text-sm">
                                 1234567
-                            </td>
+                            </td> -->
                             <td class="px-6 py-4 text-sm text-slate-500">
                                 {{ user.createdAt }}
                             </td>
@@ -119,7 +119,7 @@
                                 <div class="flex justify-center">
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" id="notifications" :checked="user.isActive"
-                                            class="sr-only peer">
+                                            class="sr-only peer" @input="changeStatus(user.id, $event)">
                                         <div
                                             class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                         </div>
@@ -144,26 +144,9 @@
                 </table>
 
                 <!-- Footer / Pagination -->
-                <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between bg-white">
-                    <p class="text-sm text-slate-400">
-                        Hiển thị 1 - {{ users.length }} trong {{ totalUsers }} khách hàng
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <button @click="currentPage > 1 && (currentPage--, fetchCustomers())"
-                            :disabled="currentPage === 1 || isLoading"
-                            class="p-2 text-slate-400 hover:bg-slate-50 rounded-lg transition-colors disabled:opacity-30">
-                            <ChevronLeft :size="18" />
-                        </button>
-
-                        <button
-                            class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-600 text-white text-sm font-bold shadow-sm shadow-red-200">1</button>
-
-                        <button @click="fetchCustomers()" :disabled="isLoading"
-                            class="p-2 text-slate-400 hover:bg-slate-50 rounded-lg transition-colors border border-slate-100 disabled:opacity-30">
-                            <ChevronRight :size="18" />
-                        </button>
-                    </div>
-                </div>
+                <PaginationSection :page-no="pagination.pageNo" :page-size="pagination.pageSize"
+                    :total-elements="pagination.totalElements" :total-page="pagination.totalPage"
+                    v-model:page-no="pagination.pageNo" @change-page="changePage"></PaginationSection>
             </div>
         </div>
     </AdminManageSection>
@@ -172,8 +155,9 @@
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
 import { ref, onMounted, watch, computed } from 'vue';
-import { Search, Calendar, Loader2, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { Loader2 } from 'lucide-vue-next';
 import { useUserStore } from '@/store/userStore';
+import PaginationSection from '@/components/PaginationSection.vue';
 
 const isLoading = ref(false);
 const error = ref(null);
@@ -182,10 +166,15 @@ const userStore = useUserStore();
 const users = computed(() => userStore.users)
 const searchQuery = ref('');
 const hasOrdersFilter = ref(true);
-const dateRange = ref('01/01/2023 - 31/10/2023');
+// const dateRange = ref('01/01/2023 - 31/10/2023');
 const currentPage = ref(1);
 const totalUsers = ref(0);
-
+const pagination = ref({
+    pageNo: 0,
+    pageSize: 0,
+    totalPage: 0,
+    totalElements: 0
+})
 
 // 4. Theo dõi thay đổi của filter để fetch lại dữ liệu
 watch([searchQuery, hasOrdersFilter], async () => {
@@ -197,7 +186,25 @@ watch([searchQuery, hasOrdersFilter], async () => {
 onMounted(async () => {
     isLoading.value = true
     const resp = await userStore.fetchUsers()
+    const value = resp.data
+    pagination.value = {
+        pageNo: value.pageNo,
+        pageSize: value.pageSize,
+        totalElements: value.totalElements,
+        totalPage: value.totalPage
+    }
     isLoading.value = false
     totalUsers.value = resp.data.totalElements
 });
+
+const changeStatus = async (id, e) => {
+    await userStore.changeStatus(id, e.target.checked)
+}
+
+const changePage = async (page) => {
+    isLoading.value = true
+    await userStore.fetchUsers(page)
+    isLoading.value = false
+}
+
 </script>

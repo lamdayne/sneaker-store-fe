@@ -89,6 +89,17 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const changeStatus = async (id, status) => {
+        try {
+            const response = await axiosInstance.patch(`/users/${id}?status=${status}`);
+            user.value = response.data
+            return response
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error)
+        }
+    }
+
     return {
         users,
         fetchUsers,
@@ -99,6 +110,7 @@ export const useUserStore = defineStore('user', () => {
         user,
         isAdmin,
         updateUser,
-        addresses
+        addresses,
+        changeStatus
     }
 })
