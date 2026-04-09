@@ -1,4 +1,10 @@
 <template>
+    <div v-if="isLoading"
+        class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
+        <div class="flex flex-col items-center gap-2">
+            <span class="animate-spin text-xl"><i class="fa-solid fa-hourglass"></i></span>
+        </div>
+    </div>
     <div class="flex justify-center items-center mt-6 font-mono gap-12">
         <div class="flex gap-4 items-center">
             <span class="py-1 px-3 bg-red-700 text-white rounded-full font-bold">1</span>
@@ -81,7 +87,7 @@
                                 <span class="font-bold italic">-0đ</span>
                             </div>
                         </div>
-                        <button
+                        <button @click="payment"
                             class="w-full bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs hover:bg-zinc-800 transition-all cursor-pointer shadow-lg">
                             Thanh toán ngay
                         </button>
@@ -176,7 +182,9 @@ import { useUserStore } from '@/store/userStore';
 import { format } from '@/utils/format';
 import Swal from 'sweetalert2';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const selectedAddress = ref(null)
 const isOpen = ref(false)
 const isLoading = ref(false)
@@ -200,9 +208,11 @@ const addressStore = useAddressStore()
 const provinces = computed(() => addressStore.provinces)
 const districts = computed(() => addressStore.districts)
 const wards = computed(() => addressStore.wards)
-const products = ref([])
+const products = computed(() => orderStore.productOrders)
 
 onMounted(async () => {
+    isLoading.value = true
+    if (orderItems.value.length <= 0) router.push('/')
     await userStore.myInfo()
     const defaultAddr = addresses.value.find(a => a.defaultAddress)
     if (defaultAddr) {
@@ -215,8 +225,8 @@ onMounted(async () => {
     )
 
     const productList = await Promise.all(productPromises)
-
-    products.value = productList
+    orderStore.productOrders = productList
+    isLoading.value = false
 })
 
 const getAddress = (address) => {
@@ -255,6 +265,10 @@ const validateForm = () => {
         }
     }
     return true
+}
+
+const payment = () => {
+    router.push('/order/payment')
 }
 
 const saveAddress = async () => {

@@ -21,6 +21,7 @@ import AdminUserPage from "@/views/admin/AdminUserPage.vue";
 import AdminProductListPage from "@/views/admin/AdminProductListPage.vue";
 import { useUserStore } from "@/store/userStore";
 import CheckoutPage from "@/views/CheckoutPage.vue";
+import PaymentCheckout from "@/views/PaymentCheckout.vue";
 
 const routes = [
     {
@@ -134,7 +135,14 @@ const routes = [
     },
     {
         path: '/order/checkout',
-        component: CheckoutPage
+        component: CheckoutPage,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/order/payment',
+        component: PaymentCheckout
     }
 ]
 
