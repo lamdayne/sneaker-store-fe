@@ -7,6 +7,7 @@ export const useOrderStore = defineStore('order', () => {
     const orderItems = ref([])
     const productOrders = ref([])
     const orderInfo = ref({})
+    const listOrders = ref([])
 
     const createOrder = async (body) => {
         try {
@@ -26,8 +27,23 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
-    const createPaymentQR = async () => {
+    const getAllMyOrder = async () => {
+        try {
+            const response = await axiosInstance.get(`/orders/me/all`)
+            listOrders.value = response.data
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
+    const getOrderById = async (id) => {
+        try {
+            const response = await axiosInstance.get(`/orders/${id}`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const clearStore = () => {
@@ -42,6 +58,9 @@ export const useOrderStore = defineStore('order', () => {
         orderInfo,
         createOrder,
         createOrderItem,
-        clearStore
+        clearStore,
+        getAllMyOrder,
+        listOrders,
+        getOrderById
     }
 })

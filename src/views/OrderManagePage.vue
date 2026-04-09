@@ -21,7 +21,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </span>
                 <input type="text" placeholder="Tìm theo mã đơn hoặc tên sản phẩm"
@@ -34,37 +34,39 @@
 
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-50">
                         <div class="flex items-center space-x-3">
-                            <span class="font-bold">#{{ order.id }}</span>
-                            <span class="text-gray-400 text-sm">Đặt ngày {{ order.date }}</span>
+                            <span class="font-bold">#{{ order.orderCode }}</span>
+                            <span class="text-gray-400 text-sm">Đặt ngày {{ order.createdAt }}</span>
                         </div>
                         <span
                             class="text-[10px] font-bold px-3 py-1 rounded uppercase tracking-wider bg-gray-50 text-gray-600">
-                            {{ order.statusLabel }}
+                            {{ order.status }}
                         </span>
                     </div>
 
                     <div class="flex items-center space-x-4 mb-6">
                         <div class="flex -space-x-2">
-                            <div v-for="(img, index) in order.images" :key="index"
+                            <div v-for="(orderItem, index) in order.orderItems" :key="index"
                                 class="w-16 h-16 border border-gray-100 rounded-lg overflow-hidden bg-gray-50">
-                                <img :src="img" class="w-full h-full object-cover" />
+                                <img :src="orderItem.product.thumbnail"
+                                    class="w-full h-full object-cover shadow-gray-600" />
                             </div>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm text-gray-700 line-clamp-1">{{ order.productName }}</p>
+                            <p class="text-sm text-gray-700 line-clamp-1">{{ order.orderItems[0].product.name }}</p>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center pt-4">
                         <div class="text-sm">
                             <span class="text-gray-500">Tổng cộng:</span>
-                            <span class="ml-2 font-bold text-lg">{{ order.totalPrice }}đ</span>
+                            <span class="ml-2 font-bold text-lg">{{ format.formatVND(order.totalAmount) }}</span>
                         </div>
                         <div class="flex space-x-3">
-                            <button class="px-6 py-2 rounded-lg text-sm font-semibold border border-gray-200">Chi
-                                tiết</button>
-                            <button class="px-6 py-2 rounded-lg text-sm font-semibold bg-black text-white">Mua
-                                lại</button>
+                            <router-link :to="`/order/${order.id}`"
+                                class="px-6 py-2 rounded-lg text-sm font-semibold border border-gray-200">Chi
+                                tiết</router-link>
+                            <!-- <button class="px-6 py-2 rounded-lg text-sm font-semibold bg-black text-white">Mua
+                                lại</button> -->
                         </div>
                     </div>
 
@@ -76,7 +78,9 @@
 
 <script setup>
 import AccountManageSection from '@/components/AccountManageSection.vue';
-import { ref } from 'vue'
+import { useOrderStore } from '@/store/orderStore';
+import { format } from '@/utils/format';
+import { computed, onMounted, ref } from 'vue'
 const activeTab = ref('all')
 const tabs = ref([
     { id: 'all', label: 'Tất cả', count: 0 },
@@ -87,6 +91,12 @@ const tabs = ref([
     { id: 'cancelled', label: 'Đã hủy', count: 0 },
 ])
 
-const listOrders = ref([])
+const orderStore = useOrderStore()
+const listOrders = computed(() => orderStore.listOrders)
+
+onMounted(async () => {
+    await orderStore.getAllMyOrder()
+    console.log(listOrders.value);
+})
 
 </script>

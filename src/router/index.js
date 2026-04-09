@@ -23,6 +23,7 @@ import { useUserStore } from "@/store/userStore";
 import CheckoutPage from "@/views/CheckoutPage.vue";
 import PaymentCheckout from "@/views/PaymentCheckout.vue";
 import OrderSuccess from "@/views/OrderSuccess.vue";
+import OrderDetailPage from "@/views/OrderDetailPage.vue";
 
 const routes = [
     {
@@ -151,6 +152,13 @@ const routes = [
     {
         path: '/order/success',
         component: OrderSuccess,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/order/:id',
+        component: OrderDetailPage,
         meta: {
             requiresAuth: true
         }
