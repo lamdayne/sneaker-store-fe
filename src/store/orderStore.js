@@ -90,6 +90,24 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
+    const changeStatus = async (orderCode, orderStatus) => {
+        try {
+            const response = await axiosInstance.post(`/orders/status/${orderCode}?status=${orderStatus}`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const clearMyCart = async () => {
+        try {
+            const response = await axiosInstance.post(`/cart-items/me/clear`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return {
         orderItems,
         productOrders,
@@ -104,6 +122,8 @@ export const useOrderStore = defineStore('order', () => {
         checkPaymentStatus,
         cancelOrder,
         getAllOrder,
-        orders
+        orders,
+        changeStatus,
+        clearMyCart
     }
 })

@@ -150,7 +150,7 @@ onMounted(async () => {
         selectedAddress.value = defaultAddr.id
     }
     isLoading.value = false
-    // console.log(orderStore.orderInfo)
+    // console.log(orderItems.value)
 })
 
 const getTotalPrice = () => {
@@ -241,6 +241,8 @@ const startCheckPayment = () => {
 
 const createOrder = async () => {
     isLoading.value = true
+    await orderStore.clearMyCart()
+
     try {
         const resp = await orderStore.createOrder({ ...orderStore.orderInfo })
         if (resp.status === 201) {
