@@ -23,11 +23,11 @@
                 <i class="fa-solid fa-box-open"></i>
                 <span>Đơn hàng của tôi</span>
             </router-link>
-            <!-- <router-link to="/auth/change-password"
+            <router-link v-if="userStore.isAdmin" to="/admin/dashboard"
                 :class="['flex items-center p-3 gap-4 rounded-xl', isActive('/auth/change-password') ? 'bg-gray-950 text-white' : 'hover:bg-blue-50']">
                 <i class="fa-solid fa-lock"></i>
-                <span>Đổi mật khẩu</span>
-            </router-link> -->
+                <span>Trang quản trị</span>
+            </router-link>
             <div class="border border-gray-200"></div>
             <button class="flex items-center p-3 hover:bg-blue-50 gap-4 rounded-xl cursor-pointer" @click="logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>

@@ -1,10 +1,9 @@
 <template>
-    <div v-if="isLoading"
-        class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
-        <div class="flex flex-col items-center gap-2">
-            <span class="animate-spin text-xl"><i class="fa-solid fa-hourglass"></i></span>
+    <model-section :is-open="isLoading">
+        <div class="animate-spin">
+            <i class="fa-solid fa-hourglass"></i>
         </div>
-    </div>
+    </model-section>
     <div class="flex justify-center items-center mt-6 font-mono gap-12">
         <div class="flex gap-4 items-center text-gray-300">
             <span class="py-1 px-3 bg-gray-300 text-white rounded-full font-bold">1</span>
@@ -110,10 +109,16 @@
             </div>
         </div>
     </div>
-
+    <model-section :is-open="showQr">
+        <div class="w-60 h-70 flex flex-col items-center">
+            <img :src="qrImageUrl" alt="" class="shadow-2xl rounded-xl">
+            <span class="mt-4 font-mono font-bold text-red-600 animate-pulse">QR sẽ hết hạn sau 2 phút</span>
+        </div>
+    </model-section>
 </template>
 
 <script setup>
+import ModelSection from '@/components/ModelSection.vue';
 import { useOrderStore } from '@/store/orderStore';
 import { useUserStore } from '@/store/userStore';
 import { format } from '@/utils/format';
@@ -131,6 +136,10 @@ const addresses = computed(() => userStore.addresses)
 const orderItems = computed(() => orderStore.orderItems)
 const products = computed(() => orderStore.productOrders)
 const orderId = ref('');
+const orderCode = ref(null)
+const qrImageUrl = ref('')
+const showQr = ref(false)
+const totalAmount = ref(null)
 
 onMounted(async () => {
     if (orderItems.value.length <= 0) router.push('/')
@@ -141,7 +150,7 @@ onMounted(async () => {
         selectedAddress.value = defaultAddr.id
     }
     isLoading.value = false
-    console.log(orderStore.orderInfo)
+    // console.log(orderStore.orderInfo)
 })
 
 const getTotalPrice = () => {
@@ -161,8 +170,74 @@ const pay = async () => {
         return
     }
     console.log(orderStore.orderInfo)
-    await createOrder()
+    if (orderStore.orderInfo.paymentMethod === 'PAY') {
+        await createOrder()
+        const body = {
+            amount: totalAmount.value,
+            description: orderCode.value
+        }
+        const resp = await orderStore.createPaymentQR({ ...body })
+        qrImageUrl.value = resp.data.qrImageUrl
+        showQr.value = true
+
+        if (window.paymentTimer) {
+            clearTimeout(window.paymentTimer)
+        }
+
+        startCheckPayment()
+
+        window.paymentTimer = setTimeout(() => {
+            qrImageUrl.value = null
+            showQr.value = false
+            console.log('QR đã hết hạn sau 2 phút')
+        }, 120 * 1000)
+    } else {
+        if (!orderCode.value) {
+            await createOrder()
+            router.push('/order/success')
+        } else {
+            router.push('/order/success')
+        }
+    }
 }
+
+let isChecking = false;
+let intervalId = null;
+let startedAt = null;
+
+const EXPIRE_TIME = 2 * 60 * 1000; // 2 phút
+
+const startCheckPayment = () => {
+    if (intervalId) return;
+
+    startedAt = Date.now();
+
+    intervalId = setInterval(async () => {
+        // check hết hạn trước
+        if (Date.now() - startedAt > EXPIRE_TIME) {
+            clearInterval(intervalId);
+            intervalId = null;
+            console.log("QR hết hạn");
+            showQr.value = false;
+            return;
+        }
+
+        if (isChecking) return;
+        isChecking = true;
+
+        try {
+            const res = await orderStore.checkPaymentStatus(orderCode.value);
+            console.log(res)
+            if (res.data === "PAID") {
+                clearInterval(intervalId);
+                intervalId = null;
+                router.push("/order/success");
+            }
+        } finally {
+            isChecking = false;
+        }
+    }, 2000);
+};
 
 const createOrder = async () => {
     isLoading.value = true
@@ -170,7 +245,7 @@ const createOrder = async () => {
         const resp = await orderStore.createOrder({ ...orderStore.orderInfo })
         if (resp.status === 201) {
             await createOrderItem(resp.data.id)
-            router.push('/order/success')
+            totalAmount.value = resp.data.totalAmount
         } else {
             Swal.fire({
                 title: "Thất bại",
@@ -178,6 +253,10 @@ const createOrder = async () => {
                 draggable: true,
                 text: 'Lỗi khi tạo đơn hàng'
             });
+        }
+        if (resp.data.orderCode) {
+            console.log(resp.data.orderCode)
+            orderCode.value = resp.data.orderCode
         }
     } catch (error) {
         console.error(error)

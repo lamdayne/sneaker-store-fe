@@ -29,7 +29,8 @@
                 </div>
                 <div class="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-4">
                     <h1 v-if="products.length === 0" class="font-bold">Không tồn tại sản phẩm nào</h1>
-                    <ProductItem :product="product" v-for="product in products" :key="product.id" />
+                    <ProductItem :product="product" v-for="product in products.filter(product => product.active)"
+                        :key="product.id" />
                 </div>
                 <PaginationSection :page-no="pagination.pageNo" :page-size="pagination.pageSize"
                     :total-elements="pagination.totalElements" :total-page="pagination.totalPage"

@@ -169,7 +169,6 @@ watch(() => carts.value, (carts) => {
         quantity: item.quantity,
         color: item.color
     }))
-    console.log(orderStore.orderItems)
 })
 
 const checkout = () => {

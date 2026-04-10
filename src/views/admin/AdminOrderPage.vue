@@ -4,11 +4,11 @@
             <!-- Header -->
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-slate-800">Đơn hàng</h1>
-                <button @click="exportCSV"
+                <!-- <button @click="exportCSV"
                     class="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm">
                     <Download :size="16" />
                     Xuất CSV
-                </button>
+                </button> -->
             </div>
 
             <!-- Filter Section -->
@@ -138,13 +138,15 @@
                             <td class="pl-6 py-4">
                                 <input type="checkbox" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
                             </td>
-                            <td class="px-4 py-4 text-xs font-medium text-slate-600">{{ order.id }}</td>
+                            <td class="px-4 py-4 text-xs font-medium text-slate-600">{{ order.orderCode }}</td>
                             <td class="px-4 py-4">
-                                <div class="text-sm font-bold text-slate-800">{{ order.customerName }}</div>
-                                <div class="text-[11px] text-slate-400">{{ order.customerEmail }}</div>
+                                <div class="text-sm font-bold text-slate-800">{{ order.user.fullName }}</div>
+                                <div class="text-[11px] text-slate-400">{{ order.user.email }}</div>
                             </td>
-                            <td class="px-4 py-4 text-xs text-slate-600">{{ order.productCount }} sản phẩm</td>
-                            <td class="px-4 py-4 text-sm font-bold text-slate-800">{{ order.totalAmount }}</td>
+                            <td class="px-4 py-4 text-xs text-slate-600">{{ getTotalQuantity(order.orderItems) }} sản
+                                phẩm</td>
+                            <td class="px-4 py-4 text-sm font-bold text-slate-800">{{
+                                format.formatVND(order.totalAmount) }}</td>
                             <td class="px-4 py-4 text-center">
                                 <span
                                     class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase tracking-tighter">
@@ -153,19 +155,16 @@
                             </td>
                             <td class="px-4 py-4 text-center">
                                 <span
-                                    :class="['px-3 py-1 rounded-md text-[11px] font-bold inline-block min-w-[100px]', order.statusClass]">
-                                    {{ order.statusLabel }}
+                                    :class="['px-3 py-1 rounded-md text-[11px] font-bold inline-block min-w-[100px]', order.paymentStatus]">
+                                    {{ order.paymentStatus }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 text-xs text-slate-400">{{ order.date }}</td>
+                            <td class="px-4 py-4 text-xs text-slate-400">{{ order.createdAt }}</td>
                             <td class="px-4 py-4 text-right">
                                 <div
                                     class="flex items-center gap-3 justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button class="text-slate-400 hover:text-slate-600">
                                         <Eye :size="18" />
-                                    </button>
-                                    <button class="text-slate-400 hover:text-slate-600">
-                                        <Printer :size="18" />
                                     </button>
                                 </div>
                             </td>
@@ -174,28 +173,9 @@
                 </table>
 
                 <!-- Pagination -->
-                <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between bg-white">
-                    <p class="text-xs text-slate-400 font-medium">Hiển thị 1 - 20 trong tổng số 1,240 đơn hàng</p>
-                    <div class="flex items-center gap-1">
-                        <button class="p-2 text-slate-300 cursor-not-allowed">
-                            <ChevronLeft :size="16" />
-                        </button>
-
-                        <button
-                            class="w-8 h-8 rounded-lg bg-slate-900 text-white text-xs font-bold shadow-md shadow-slate-200 transition-transform active:scale-95">1</button>
-                        <button
-                            class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-600 text-xs font-medium">2</button>
-                        <button
-                            class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-600 text-xs font-medium">3</button>
-                        <span class="px-1 text-slate-300 text-xs">...</span>
-                        <button
-                            class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-600 text-xs font-medium">62</button>
-
-                        <button class="p-2 text-slate-400 hover:bg-slate-50 rounded-lg">
-                            <ChevronRight :size="16" />
-                        </button>
-                    </div>
-                </div>
+                <PaginationSection :page-no="pagination.pageNo" :page-size="pagination.pageSize"
+                    :total-elements="pagination.totalElements" :total-page="pagination.totalPage"
+                    v-model:page-no="pagination.pageNo" @change-page="changePage"></PaginationSection>
             </div>
         </div>
     </AdminManageSection>
@@ -203,30 +183,26 @@
 
 <script setup>
 import AdminManageSection from '@/components/AdminManageSection.vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import {
     Search,
-    Download,
     Calendar,
-    ChevronLeft,
-    ChevronRight,
     Loader2,
     Eye,
-    Printer,
     ChevronDown
 } from 'lucide-vue-next';
-// 1. Khởi tạo trạng thái dữ liệu
-const orders = ref([]);
+import { useOrderStore } from '@/store/orderStore';
+import { format } from '@/utils/format';
+import PaginationSection from '@/components/PaginationSection.vue';
+
+
 const isLoading = ref(false);
-const error = ref(null);
 
 // 2. Tham số lọc và Tab
 const activeTab = ref('all');
 const searchQuery = ref('');
 const statusFilter = ref('all');
 const paymentFilter = ref('all');
-const dateRange = ref('');
-const currentPage = ref(1);
 
 const tabs = [
     { id: 'all', label: 'Tất cả', count: 1240 },
@@ -237,88 +213,37 @@ const tabs = [
     { id: 'cancelled', label: 'Đã hủy', count: 35 },
 ];
 
-// 3. Hàm lấy dữ liệu (Giả lập kết nối Back-end)
-const fetchOrders = async () => {
-    isLoading.value = true;
-    error.value = null;
+const orderStore = useOrderStore()
 
-    try {
-        await new Promise(resolve => setTimeout(resolve, 800));
+const orders = computed(() => orderStore.orders)
 
-        // Dữ liệu mẫu dựa trên ảnh
-        const mockOrders = [
-            {
-                id: 'DH20241201',
-                customerName: 'Nguyễn Hoàng Long',
-                customerEmail: 'hoanglong@email.com',
-                productCount: 3,
-                totalAmount: '2,450,000đ',
-                paymentMethod: 'MoMo',
-                status: 'processing',
-                statusLabel: 'Đang xử lý',
-                statusClass: 'text-blue-600 bg-blue-50',
-                date: '01/12/2024'
-            },
-            {
-                id: 'DH20241198',
-                customerName: 'Trần Thị Mai',
-                customerEmail: 'mai.tran@email.com',
-                productCount: 1,
-                totalAmount: '890,000đ',
-                paymentMethod: 'COD',
-                status: 'shipping',
-                statusLabel: 'Đang giao',
-                statusClass: 'text-orange-500 bg-orange-50',
-                date: '30/11/2024'
-            },
-            {
-                id: 'DH20241185',
-                customerName: 'Lê Văn Hùng',
-                customerEmail: 'hunglv@yahoo.com',
-                productCount: 2,
-                totalAmount: '1,720,000đ',
-                paymentMethod: 'CK',
-                status: 'delivered',
-                statusLabel: 'Đã giao',
-                statusClass: 'text-green-600 bg-green-50',
-                date: '29/11/2024'
-            },
-            {
-                id: 'DH20241172',
-                customerName: 'Phạm Minh Đức',
-                customerEmail: 'ducpm@outlook.com',
-                productCount: 4,
-                totalAmount: '5,100,000đ',
-                paymentMethod: 'MoMo',
-                status: 'cancelled',
-                statusLabel: 'Đã hủy',
-                statusClass: 'text-red-600 bg-red-50',
-                date: '28/11/2024'
-            },
-            {
-                id: 'DH20241165',
-                customerName: 'Vũ Ngọc Anh',
-                customerEmail: 'ngocanh.vu@gmail.com',
-                productCount: 1,
-                totalAmount: '1,250,000đ',
-                paymentMethod: 'COD',
-                status: 'pending',
-                statusLabel: 'Chờ xác nhận',
-                statusClass: 'text-slate-500 bg-slate-100',
-                date: '28/11/2024'
-            }
-        ];
+const pagination = ref({
+    pageNo: 0,
+    pageSize: 0,
+    totalPage: 0,
+    totalElements: 0
+})
 
-        orders.value = mockOrders;
-    } catch (err) {
-        error.value = "Không thể tải danh sách đơn hàng.";
-    } finally {
-        isLoading.value = false;
+onMounted(async () => {
+    const resp = await orderStore.getAllOrder()
+    const value = resp.data
+    pagination.value = {
+        pageNo: value.pageNo,
+        pageSize: value.pageSize,
+        totalElements: value.totalElements,
+        totalPage: value.totalPage
     }
-};
+});
 
-onMounted(fetchOrders);
-watch([activeTab, searchQuery], fetchOrders);
+const getTotalQuantity = (orderItems) => {
+    return orderItems.reduce((total, item) => total + item.quantity, 0)
+}
 
-const exportCSV = () => console.log('Exporting orders...');
+const changePage = async (page) => {
+    isLoading.value = true
+    await orderStore.getAllOrder(page)
+    isLoading.value = false
+}
+
+
 </script>

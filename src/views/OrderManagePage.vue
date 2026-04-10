@@ -52,7 +52,8 @@
                             </div>
                         </div>
                         <div class="flex-1">
-                            <p class="text-sm text-gray-700 line-clamp-1">{{ order.orderItems[0].product.name }}</p>
+                            <p class="text-sm text-gray-700 line-clamp-1">{{ order.orderItems[0]['product']['name'] }}
+                            </p>
                         </div>
                     </div>
 
