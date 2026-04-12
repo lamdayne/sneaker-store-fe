@@ -108,7 +108,17 @@ export const useUserStore = defineStore('user', () => {
     const forgotPassword = async (email) => {
         try {
             const response = await axiosInstance.post(`/users/forgot?email=${email}`)
-            console.log(response)
+            return response
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error)
+        }
+    }
+
+    const changePassword = async (body) => {
+        try {
+            const response = await axiosInstance.post(`/users/change-password`, body)
+            return response
         } catch (error) {
             console.log(error)
             return Promise.reject(error)
@@ -127,6 +137,7 @@ export const useUserStore = defineStore('user', () => {
         updateUser,
         addresses,
         changeStatus,
-        forgotPassword
+        forgotPassword,
+        changePassword
     }
 })

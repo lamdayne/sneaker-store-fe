@@ -91,9 +91,18 @@ const forgotPassword = async () => {
     if (!validateForm()) return
     isLoading.value = true
     try {
-        await userStore.forgotPassword(email.value)
-        currentStep.value = 2
-        isLoading.value = false
+        const resp = await userStore.forgotPassword(email.value)
+        if (resp.status === 200) {
+            currentStep.value = 2
+            isLoading.value = false
+        } else {
+            Swal.fire({
+                title: "Warning",
+                icon: "warning",
+                draggable: true,
+                text: resp.message
+            });
+        }
     } catch (error) {
         console.error(error)
     } finally {
@@ -104,8 +113,8 @@ const forgotPassword = async () => {
 const validateForm = () => {
     if (!email.value) {
         Swal.fire({
-            title: "Thất bại",
-            icon: "error",
+            title: "Warning",
+            icon: "warning",
             draggable: true,
             text: 'Vui lòng nhập email'
         });

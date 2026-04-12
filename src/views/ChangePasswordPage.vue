@@ -24,7 +24,7 @@
                             class="absolute right-4 top-[38px] text-green-500 font-bold text-lg">✓</span>
                     </div>
 
-                    <button
+                    <button @click="changePassword"
                         class="w-full bg-[#111111] hover:bg-black text-white py-3 rounded-lg font-medium transition-colors">
                         Đặt lại mật khẩu
                     </button>
@@ -48,7 +48,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { useUserStore } from '@/store/userStore';
+import Swal from 'sweetalert2';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
@@ -56,7 +58,64 @@ const password = ref("")
 const confirmPassword = ref("")
 const isSuccess = ref(false)
 
-onMounted(() => {
-    console.log(route.query)
-})
+const userStore = useUserStore()
+
+const changePassword = async () => {
+    if (!validateForm()) return
+    const requestBody = {
+        email: route.query.email,
+        code: route.query.secretCode,
+        password: password.value
+    }
+    try {
+        const resp = await userStore.changePassword({ ...requestBody })
+        if (resp.status === 200) {
+            // Swal.fire({
+            //     title: "Thành công",
+            //     icon: "success",
+            //     draggable: true,
+            //     text: resp.message
+            // });
+            isSuccess.value = true
+        } else {
+            Swal.fire({
+                title: "Warning",
+                icon: "warning",
+                draggable: true,
+                text: resp.message
+            });
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+const validateForm = () => {
+    if (!password.value) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: 'Vui lòng nhập mật khẩu'
+        });
+        return false
+    } else if (!confirmPassword.value) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: 'Vui lòng nhập xác nhận mật khẩu'
+        });
+        return false
+    } else if (confirmPassword.value !== password.value) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: 'Xác nhận mật khẩu không đúng'
+        });
+        return false
+    }
+    return true
+}
 </script>
