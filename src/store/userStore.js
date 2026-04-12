@@ -13,7 +13,12 @@ export const useUserStore = defineStore('user', () => {
     const isAuthenticated = computed(() => !!accessToken.value)
 
     const decodeToken = computed(() => {
-        if (!accessToken.value) return null
+        const token = accessToken.value
+
+        if (!token || token === "undefined" || token === "null") {
+            return null
+        }
+
         return decodeJWT(accessToken.value)
     })
 
@@ -100,6 +105,16 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    const forgotPassword = async (email) => {
+        try {
+            const response = await axiosInstance.post(`/users/forgot?email=${email}`)
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error)
+        }
+    }
+
     return {
         users,
         fetchUsers,
@@ -111,6 +126,7 @@ export const useUserStore = defineStore('user', () => {
         isAdmin,
         updateUser,
         addresses,
-        changeStatus
+        changeStatus,
+        forgotPassword
     }
 })

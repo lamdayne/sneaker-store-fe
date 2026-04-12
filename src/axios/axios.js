@@ -1,5 +1,6 @@
 import axios from "axios"
 
+let refreshTokenRequest = null
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     timeout: 50000,
@@ -8,10 +9,11 @@ const axiosInstance = axios.create({
     }
 })
 
-let refreshTokenRequest = null
-
 axiosInstance.interceptors.request.use(
     (config) => {
+        if (config.url === '/auth/refresh') {
+            return config
+        }
         const token = localStorage.getItem('accessToken')
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
@@ -30,16 +32,15 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         console.error([error])
-        if (error.response.status === 401) {
+        if (error.response?.status === 401) {
             refreshTokenRequest = refreshTokenRequest
                 ? refreshTokenRequest
                 : refreshToken().finally(() => refreshTokenRequest = null)
 
-            return this.refreshTokenRequest.then(accessToken => {
-                error.response.config.Authorization = `Bearer ${accessToken}`
-                return this.instance(error.response.config) // gọi lại api với config cần xử lý lại
-            }).catch(refreshTokenError => {
-                throw refreshTokenError
+            return refreshTokenRequest.then(accessToken => {
+                console.log(accessToken);
+                error.config.Authorization = `Bearer ${accessToken}`
+                return axiosInstance(error.config)
             })
         }
         return Promise.reject(error)
@@ -47,12 +48,16 @@ axiosInstance.interceptors.response.use(
 )
 
 const refreshToken = async () => {
-    const refreshToken = localStorage.getItem("refresh_token");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken || refreshToken === "undefined" || refreshToken === "null") {
+        localStorage.clear()
+        return Promise.reject("Khong co token")
+    }
     try {
         const res = await axiosInstance.post("/auth/refresh", { token: refreshToken })
         console.log(res);
-        localStorage.setItem("accessToken", res.accessToken)
-        localStorage.setItem("refreshToken", res.refreshToken)
+        localStorage.setItem("accessToken", res.data.accessToken)
+        localStorage.setItem("refreshToken", res.data.refreshToken)
         return res.accessToken;
     } catch (error) {
         localStorage.clear();

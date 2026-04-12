@@ -24,6 +24,7 @@ import CheckoutPage from "@/views/CheckoutPage.vue";
 import PaymentCheckout from "@/views/PaymentCheckout.vue";
 import OrderSuccess from "@/views/OrderSuccess.vue";
 import OrderDetailPage from "@/views/OrderDetailPage.vue";
+import ChangePasswordPage from "@/views/ChangePasswordPage.vue";
 
 const routes = [
     {
@@ -162,6 +163,10 @@ const routes = [
         meta: {
             requiresAuth: true
         }
+    },
+    {
+        path: '/forgot/change-password',
+        component: ChangePasswordPage
     }
 ]
 
