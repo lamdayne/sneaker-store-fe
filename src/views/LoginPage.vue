@@ -4,11 +4,11 @@
             <h1 class="text-2xl uppercase font-bold font-serif text-center">Đăng Nhập</h1>
             <p class="font-sans text-gray-600 text-center">Đăng nhập ngay để khám phá bộ sưu tập mới</p>
             <div class="flex mt-3 gap-4">
-                <button
+                <!-- <button
                     class="flex-1 cursor-pointer items-center flex gap-3 justify-center py-2.5 shadow-xs rounded-2xl shadow-gray-300">
                     <img src="https://img.icons8.com/?size=96&id=V5cGWnc9R4xj&format=png" class="w-8 h-8" alt="">
                     <span class="text-[18px] font-mono">Google</span>
-                </button>
+                </button> -->
                 <!-- <button
                     class="flex-1 cursor-pointer items-center flex gap-3 justify-center py-2.5 shadow-xs rounded-2xl shadow-gray-300">
                     <img src="https://img.icons8.com/?size=96&id=uLWV5A9vXIPu&format=png" class="w-8 h-8" alt="">
@@ -101,12 +101,21 @@ const login = async () => {
         }
         return;
     } else {
-        Swal.fire({
-            title: "Thành công",
-            icon: "success",
-            draggable: true,
-            text: 'Đăng nhập thành công'
-        });
+        if (resp.status === 200 && resp.message != 'User created successfully') {
+            Swal.fire({
+                title: "Thất bại",
+                icon: "error",
+                draggable: true,
+                text: resp.message
+            });
+        } else {
+            Swal.fire({
+                title: "Thành công",
+                icon: "success",
+                draggable: true,
+                text: 'Đăng nhập thành công'
+            });
+        }
     }
     router.push(route.query.redirect || '/')
 }

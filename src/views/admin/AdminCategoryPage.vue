@@ -209,13 +209,35 @@ const updateCategory = async () => {
 
 const handleImage = (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file || !file.type.startsWith('image/')) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: "Vui lòng upload ảnh"
+        });
+        return
+    }
     const url = URL.createObjectURL(file);
     imageUrl.value = url
     logoFile.value = file
 }
 
+const validateForm = () => {
+    if (!categoryInfo.value.name) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: "Vui lòng upload ảnh"
+        });
+        return false
+    }
+    return true
+}
+
 const saveCategory = async () => {
+    if (!validateForm()) return
     isLoading.value = true
     const categoryImage = await uploadCategoryImage(logoFile.value)
     categoryInfo.value.imageUrl = categoryImage.secure_url;

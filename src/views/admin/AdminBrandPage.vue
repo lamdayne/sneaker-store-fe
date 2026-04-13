@@ -215,7 +215,15 @@ const updateInfo = async () => {
 
 const handleImage = (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file || !file.type.startsWith('image/')) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: "Vui lòng upload ảnh"
+        });
+        return
+    }
     const url = URL.createObjectURL(file);
     urlImage.value = url
     imageFile.value = file
@@ -225,7 +233,29 @@ const changeActiveStatus = async (id, e) => {
     await brandStore.changeStatus(id, e.target.checked)
 }
 
+const validateForm = () => {
+    if (!brandInfo.value.name) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: "Vui lòng nhập tên thương hiệu"
+        });
+        return false
+    } else if (!brandInfo.value.description) {
+        Swal.fire({
+            title: "Warning",
+            icon: "warning",
+            draggable: true,
+            text: "Vui lòng nhập mô tả thương hiệu"
+        });
+        return false
+    }
+    return true
+}
+
 const saveBrand = async () => {
+    if (!validateForm()) return
     isLoading.value = true
     const secureUrl = await uploadLogoBrand(imageFile.value);
     try {

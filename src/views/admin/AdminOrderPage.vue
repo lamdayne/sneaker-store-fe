@@ -126,7 +126,10 @@
                                 Thanh toán</th>
                             <th
                                 class="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
-                                Trạng thái</th>
+                                Trạng thái thanh toán</th>
+                            <th
+                                class="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                                Trạng thái đơn</th>
                             <th class="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ngày
                             </th>
                             <th class="px-4 py-4"></th>
@@ -159,11 +162,12 @@
                                     {{ order.paymentStatus }}
                                 </span>
                             </td>
+                            <td class="px-4 py-4 text-xs text-slate-400 font-bold">{{ order.status }}</td>
                             <td class="px-4 py-4 text-xs text-slate-400">{{ order.createdAt }}</td>
                             <td class="px-4 py-4 text-right">
                                 <div
                                     class="flex items-center gap-3 justify-end pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button class="text-slate-400 hover:text-slate-600">
+                                    <button class="text-slate-400 hover:text-slate-600" @click="showOrderDetail(order)">
                                         <Eye :size="18" />
                                     </button>
                                 </div>
@@ -178,6 +182,65 @@
                     v-model:page-no="pagination.pageNo" @change-page="changePage"></PaginationSection>
             </div>
         </div>
+        <ModelSection :is-open="isOpen" @close-modal="closeModal">
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-xl font-bold mb-6">Sản phẩm ({{ order?.orderItems?.length || 0 }})</h3>
+                        <div class="space-y-6">
+                            <div v-for="item in order?.orderItems" :key="item?.id"
+                                class="flex gap-6 pb-6 border-b last:border-0 last:pb-0">
+                                <img :src="item?.product?.thumbnail"
+                                    class="w-24 h-24 rounded-2xl object-cover border" />
+                                <div class="flex-1">
+                                    <div class="flex justify-between font-bold text-gray-900">
+                                        <span>{{ item?.product?.name }}</span>
+                                        <span>{{ format.formatVND(item?.unitPrice) }}</span>
+                                    </div>
+                                    <div class="text-sm text-gray-500 mt-1">
+                                        Size: {{ item?.size }} | Màu: {{ item?.color }}
+                                    </div>
+                                    <div class="text-sm mt-2">Số lượng: {{ item?.quantity }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <div class="flex justify-between">
+                            <span>Tạm tính</span>
+                            <span>{{ format.formatVND(order?.subtotal) }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Phí vận chuyển</span>
+                            <span>{{ format.formatVND(order?.shippingFee) }}</span>
+                        </div>
+                        <div class="flex justify-between text-red-600">
+                            <span>Giảm giá</span>
+                            <span>-{{ format.formatVND(order?.discountAmount) }}</span>
+                        </div>
+                        <div class="border-t pt-5 flex justify-between items-end">
+                            <span class="text-lg font-bold">Tổng thanh toán</span>
+                            <span class="text-3xl font-extrabold text-red-600">
+                                {{ format.formatVND(order?.totalAmount) }}
+                            </span>
+                        </div>
+                    </div>
+                    <select v-model="orderStatus" name="" id="" class="w-full p-3 shadow rounded-xl">
+                        <option value="PENDING">PENDING</option>
+                        <option value="ACCEPTED">ACCEPTED</option>
+                        <option value="SHIPPED">SHIPPED</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                    <button @click="changeStatus"
+                        class="w-full p-4 bg-gray-950 text-white rounded-xl shadow cursor-pointer">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </ModelSection>
     </AdminManageSection>
 </template>
 
@@ -194,6 +257,7 @@ import {
 import { useOrderStore } from '@/store/orderStore';
 import { format } from '@/utils/format';
 import PaginationSection from '@/components/PaginationSection.vue';
+import ModelSection from '@/components/ModelSection.vue';
 
 
 const isLoading = ref(false);
@@ -205,7 +269,7 @@ const statusFilter = ref('all');
 const paymentFilter = ref('all');
 
 const tabs = [
-    { id: 'all', label: 'Tất cả', count: 1240 },
+    { id: 'all', label: 'Tất cả', count: 12 },
     { id: 'pending', label: 'Chờ xác nhận', count: 42 },
     { id: 'processing', label: 'Đang xử lý', count: 15 },
     { id: 'shipping', label: 'Đang giao', count: 28 },
@@ -216,6 +280,9 @@ const tabs = [
 const orderStore = useOrderStore()
 
 const orders = computed(() => orderStore.orders)
+const order = ref(null)
+const isOpen = ref(false)
+const orderStatus = ref(null)
 
 const pagination = ref({
     pageNo: 0,
@@ -245,5 +312,21 @@ const changePage = async (page) => {
     isLoading.value = false
 }
 
+const showOrderDetail = (orderDetail) => {
+    order.value = orderDetail
+    isOpen.value = true
+    console.log(order);
+}
+
+const closeModal = () => {
+    isOpen.value = false
+    order.value = null
+}
+
+const changeStatus = async () => {
+    await orderStore.changeStatus(order.value.orderCode, orderStatus.value)
+    await orderStore.getAllOrder()
+    closeModal()
+}
 
 </script>
