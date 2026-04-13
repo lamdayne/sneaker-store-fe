@@ -108,6 +108,15 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
+    const revenue = async () => {
+        try {
+            const response = await axiosInstance.get(`/revenue/statistic`)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return {
         orderItems,
         productOrders,
@@ -124,6 +133,7 @@ export const useOrderStore = defineStore('order', () => {
         getAllOrder,
         orders,
         changeStatus,
-        clearMyCart
+        clearMyCart,
+        revenue
     }
 })

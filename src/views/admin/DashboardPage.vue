@@ -9,7 +9,7 @@
                     <div class="flex flex-col">
                         <p class="text-[15px] font-bold text-slate-500 capitalize">Doanh thu</p>
                         <span class="font-bold text-2xl">{{ format.formatVND(36000000) }}</span>
-                        <span class="text-green-600 font-bold mt-3">+18%</span>
+                        <span class="text-green-600 font-bold mt-3"></span>
                     </div>
                     <div class="p-4 bg-green-300 rounded-lg h-fit text-lg">
                         <i class="fa-solid fa-money-bill"></i>
@@ -18,8 +18,8 @@
                 <div class="flex p-4 border-2 border-gray-200 rounded-lg justify-between">
                     <div class="flex flex-col">
                         <p class="text-[15px] font-bold text-slate-500 capitalize">New Orders</p>
-                        <span class="font-bold text-2xl">36</span>
-                        <span class="text-green-600 font-bold mt-3">+36%</span>
+                        <span class="font-bold text-2xl">{{ totalOrder }}</span>
+                        <span class="text-green-600 font-bold mt-3"></span>
                     </div>
                     <div class="p-4 bg-blue-300 rounded-lg h-fit text-lg">
                         <i class="fa-solid fa-basket-shopping"></i>
@@ -28,8 +28,8 @@
                 <div class="flex p-4 border-2 border-gray-200 rounded-lg justify-between">
                     <div class="flex flex-col">
                         <p class="text-[15px] font-bold text-slate-500 capitalize">Sản phẩm bán chạy</p>
-                        <span class="font-bold text-2xl">Air Force 1</span>
-                        <span class="text-green-600 font-bold mt-3">+36%</span>
+                        <span class="font-bold text-2xl">{{ bestProduct }}</span>
+                        <span class="text-green-600 font-bold mt-3"></span>
                     </div>
                     <div class="p-4 bg-orange-400 rounded-lg h-fit text-lg">
                         <i class="fa-solid fa-fire"></i>
@@ -37,9 +37,9 @@
                 </div>
                 <div class="flex p-4 border-2 border-gray-200 rounded-lg justify-between">
                     <div class="flex flex-col">
-                        <p class="text-[15px] font-bold text-slate-500 capitalize">Khách hàng mới</p>
-                        <span class="font-bold text-2xl">36</span>
-                        <span class="text-green-600 font-bold mt-3">+18%</span>
+                        <p class="text-[15px] font-bold text-slate-500 capitalize">Khách hàng</p>
+                        <span class="font-bold text-2xl">{{ totalUser }}</span>
+                        <span class="text-green-600 font-bold mt-3"></span>
                     </div>
                     <div class="p-4 bg-yellow-200 rounded-lg h-fit text-lg">
                         <i class="fa-solid fa-user"></i>
@@ -79,6 +79,8 @@ import {
     LinearScale,
     PointElement
 } from 'chart.js'
+import { useOrderStore } from '@/store/orderStore';
+import { onMounted, ref } from 'vue';
 
 ChartJS.register(
     Title,
@@ -89,6 +91,23 @@ ChartJS.register(
     LinearScale,
     PointElement
 )
+
+const orderStore = useOrderStore()
+const totalUser = ref(0)
+const totalOrder = ref(0)
+const bestProduct = ref(null)
+
+onMounted(async () => {
+    const resp = await orderStore.revenue()
+    console.log(resp.data)
+    totalUser.value = resp.data.totalUser
+    totalOrder.value = resp.data.totalOrder
+    const bestProductSell = resp.data.bestSellingProduct.reduce((max, current) => {
+        return current[1] > max[1] ? current : max;
+    });
+
+    bestProduct.value = bestProductSell[0]
+})
 
 function getLast7Days() {
     const days = []
